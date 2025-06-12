@@ -104,6 +104,24 @@ button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {{
   opacity: .85; font-weight: bold; padding-bottom: 12px;
   animation: fadeUp 1.2s; text-shadow: 0 1px 6px #1976d21a;
 }}
+
+/* *** التباين العالي: *** */
+.stRadio label, .stRadio div, .stRadio span, .stRadio p,
+.stTextInput label, .stTextArea label,
+.stMarkdown, .stSelectbox label, .stInfo, .stFileUploader label, .stDataFrame label {{
+  color: #222 !important;
+  font-weight: 600 !important;
+  letter-spacing: .1px;
+}}
+
+.stTextInput input, .stTextArea textarea {{
+  background: #fff !important;
+  color: #222 !important;
+}}
+
+.stButton>button {{
+  box-shadow: 0 4px 16px #1976d240;
+}}
 @keyframes fadeUp {{0% {{opacity:0;transform:translateY(28px);}}100% {{opacity:1;transform:translateY(0);}}}}
 </style>
 """, unsafe_allow_html=True)
