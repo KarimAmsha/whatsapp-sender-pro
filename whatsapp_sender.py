@@ -2,95 +2,113 @@ import streamlit as st
 import pandas as pd
 import urllib.parse
 
-# ========== ألوان وستايل جديدة ==========
 st.set_page_config(page_title="KARIM | WhatsApp Sender PRO", layout="centered")
-st.markdown("""
+
+# --- Material Design Colors ---
+PRIMARY = "#1976d2"        # Blue 700
+PRIMARY_DARK = "#115293"   # Blue 900
+PRIMARY_LIGHT = "#63a4ff"  # Blue 400
+ACCENT = "#26c6da"         # Cyan 400
+BG = "#f5f7fa"             # Background grey
+SURFACE = "#fff"
+SHADOW = "0 8px 40px 0 #1976d22a, 0 1.5px 10px #26c6da22"
+TEXT_MAIN = "#212121"      # Main dark text
+TEXT_FAINT = "#636e72"     # Muted text
+
+st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Open+Sans:wght@400;700&display=swap');
-body, [class*="css"] { font-family: 'Open Sans', 'Cairo', Arial, sans-serif !important;}
-.stApp {
-  background: linear-gradient(135deg, #F4FFF8 0%, #EEE8FD 55%, #B3E5DF 100%) fixed !important;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Cairo:wght@700&display=swap');
+html, body, [class*="css"] {{
+  font-family: 'Roboto', 'Cairo', Arial, sans-serif !important;
+  background: {BG} !important;
+  color: {TEXT_MAIN};
+}}
+.stApp {{
+  background: {BG} !important;
   min-height: 100vh;
-}
-.glass-box {
-  background: rgba(255,255,255,0.82);
-  border-radius: 24px;
-  box-shadow: 0 6px 32px #cdb6fa27, 0 1.5px 18px #91d1ad28;
-  backdrop-filter: blur(7.5px); -webkit-backdrop-filter: blur(7.5px);
-  padding: 30px 20px 18px 20px;
-  margin: 32px auto 16px auto; max-width: 520px;
-  border: 1.7px solid #e4e8fd36; animation: floatUp .7s;
-}
-@keyframes floatUp {
-  0% {transform: translateY(40px) scale(.95); opacity:0;}
-  60% {transform: translateY(-7px) scale(1.03);}
-  100% {transform: translateY(0) scale(1); opacity:1;}
-}
-.karim-logo {
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cairo', sans-serif; font-size: 2.2rem; font-weight: 900; letter-spacing: 7px;
-  margin-bottom: 0.1rem; padding-bottom: 0.4rem; text-align: center;
-  background: linear-gradient(90deg, #986ce5 40%, #61beac 100%);
+}}
+.glass-box {{
+  background: {SURFACE};
+  border-radius: 18px;
+  box-shadow: {SHADOW};
+  padding: 32px 18px 16px 18px;
+  margin: 28px auto 16px auto;
+  max-width: 490px;
+  border: 1.5px solid #e3e8ee;
+  animation: fadeInCard .8s cubic-bezier(.56,.19,.34,.98);
+}}
+@keyframes fadeInCard {{
+  0% {{opacity:0; transform: scale(.96) translateY(40px);}}
+  100% {{opacity:1; transform: scale(1) translateY(0);}}
+}}
+.karim-logo {{
+  font-family: 'Cairo', 'Roboto', sans-serif;
+  font-size: 2.1rem; font-weight: 900; letter-spacing: 7px;
+  margin-bottom: .4rem; text-align: center;
+  background: linear-gradient(90deg, {PRIMARY} 35%, {ACCENT} 90%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; text-fill-color: transparent; user-select: none;
-  text-shadow: 0 4px 12px #91d1ad66;
-  filter: drop-shadow(0 1px 8px #aacff9b7);
+  background-clip: text; text-fill-color: transparent;
+  user-select: none;
+  text-shadow: 0 3px 15px #1976d22e;
   animation: popIn 1.1s cubic-bezier(.31,1.37,.71,1);
-}
-.karim-logo .whats-icon {
-  font-size: 1.6rem; margin-left: 11px; margin-right: -7px;
-  filter: drop-shadow(0 2px 7px #4be97db8);
-  animation: pulseLogo 2.4s infinite alternate;
-}
-@keyframes popIn { 0% {letter-spacing:0px;opacity:0;transform: scale(.5);}
-  80% {letter-spacing:13px;transform: scale(1.08);} 100% {opacity:1;} }
-@keyframes pulseLogo {
-  0% {filter:drop-shadow(0 0 3px #4be97db0);}
-  100% {filter:drop-shadow(0 0 13px #61beac);}}
-.title-pro {
-  font-size: 1.15rem; margin-bottom: 1.1rem; color: #7e55c9;
-  text-align: center; letter-spacing: 1.6px; font-family: 'Cairo', 'Open Sans', sans-serif;
-  font-weight: bold; animation: fadeDown .7s;}
-@keyframes fadeDown {0% {opacity:0;transform:translateY(-34px);} 100% {opacity:1;transform:translateY(0);}}
-.progress-outer { margin: 17px auto 6px auto; width: 64px; height: 64px; position: relative; display: flex; align-items: center; justify-content: center;}
-.progress-circle {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: conic-gradient(#70d1b9 0% {progress}%, #f3ecff {progress}% 100%);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 3px 12px #986ce532;
-  position: absolute; top: 0; left: 0; animation: popIn 0.7s;}
-.progress-num { font-size: 1.11rem; color: #653d93; font-family: 'Cairo',sans-serif; font-weight: 900; letter-spacing: 2px; z-index: 1;}
-.numbers-list-karim {
-  display: flex; flex-direction: column; gap: 2.5px; font-size: 13.2px;
-  background: #f3ecffad; border-radius: 10px; padding: 7px 10px 7px 14px; margin-bottom: 12px;
-  max-height: 90px; overflow-y: auto; color: #6952a6;
-  border: 1.1px solid #ede7fa;
-  box-shadow: 0 2px 7px #aacff91a;
-  font-family: 'Open Sans', Cairo, sans-serif;}
-.numbers-list-karim .active {
-  background: linear-gradient(90deg,#c8e6df 50%,#e3d6fd 100%);
-  border-radius: 7px; font-weight: bold; color: #1fa47e; font-size: 1.01em;}
-button[kind="primary"], button[data-testid="baseButton-primary"] {
-  background: linear-gradient(90deg, #64cfc1 40%, #986ce5 100%);
-  border-radius: 15px !important; color: #fff !important; font-weight: bold;
-  transition: box-shadow 0.19s, transform 0.19s; box-shadow: 0 4px 14px #b2e7e732; border: none !important;
-  font-family: 'Cairo', 'Open Sans', sans-serif; font-size: 1.02em;}
-button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
-  background: linear-gradient(90deg, #50beaa 25%, #b49bf5 100%);
-  box-shadow: 0 8px 22px #b2e7e754;
-  transform: translateY(-2px) scale(1.045);}
-[data-testid="collapsedControl"] {display: none;}
-.footer-karim {
-  margin-top: 2.1rem; font-size: 1.1rem; color: #63b37e;
-  text-align: center; letter-spacing: 1.2px; font-family: 'Cairo', 'Open Sans', sans-serif;
-  opacity: .81; font-weight: bold; padding-bottom: 13px;
-  animation: fadeUp 1.2s; text-shadow: 0 1px 7px #b9efd364;}
-@keyframes fadeUp {0% {opacity:0;transform:translateY(32px);}100% {opacity:1;transform:translateY(0);}
-}
+}}
+@keyframes popIn {{
+  0% {{letter-spacing:0px;opacity:0;transform: scale(.7);}}
+  80% {{letter-spacing:11px;transform: scale(1.04);}}
+  100% {{opacity:1;}}
+}}
+.title-pro {{
+  font-size: 1.18rem;
+  margin-bottom: 1.1rem;
+  color: {PRIMARY};
+  text-align: center; letter-spacing: 1.4px;
+  font-family: 'Cairo', 'Roboto', sans-serif;
+  font-weight: bold;
+  animation: fadeDown .7s;
+}}
+@keyframes fadeDown {{
+  0% {{opacity:0;transform:translateY(-22px);}}
+  100% {{opacity:1;transform:translateY(0);}}
+}}
+.numbers-list-karim {{
+  display: flex; flex-direction: column; gap: 2.5px; font-size: 13.8px;
+  background: #f7fafd; border-radius: 7px; padding: 8px 10px 8px 11px; margin-bottom: 14px;
+  max-height: 85px; overflow-y: auto; color: {PRIMARY_DARK};
+  border: 1.1px solid #e3e8ee;
+  box-shadow: 0 2px 9px #1976d219;
+  font-family: 'Roboto', 'Cairo', sans-serif;
+}}
+.numbers-list-karim .active {{
+  background: linear-gradient(90deg,#e3f2fd 55%,#b3ecf7 100%);
+  border-radius: 6px; font-weight: bold; color: {PRIMARY};
+  font-size: 1.03em; border-left: 4.2px solid {ACCENT}; padding-left: 3px;
+}}
+button[kind="primary"], button[data-testid="baseButton-primary"] {{
+  background: linear-gradient(90deg, {PRIMARY} 35%, {ACCENT} 100%);
+  border-radius: 12px !important; color: #fff !important; font-weight: bold;
+  box-shadow: 0 4px 14px #26c6da30;
+  border: none !important; font-family: 'Roboto', 'Cairo', sans-serif;
+  font-size: 1.07em; letter-spacing:.3px;
+  transition: box-shadow 0.18s, transform 0.18s;
+}}
+button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {{
+  background: linear-gradient(90deg, {ACCENT} 15%, {PRIMARY} 100%);
+  box-shadow: 0 8px 22px #1976d248;
+  transform: translateY(-2px) scale(1.045);
+}}
+[data-testid="collapsedControl"] {{display: none;}}
+.footer-karim {{
+  margin-top: 2.0rem; font-size: 1.05rem; color: {PRIMARY_DARK};
+  text-align: center; letter-spacing: 1.0px;
+  font-family: 'Cairo', 'Roboto', sans-serif;
+  opacity: .85; font-weight: bold; padding-bottom: 12px;
+  animation: fadeUp 1.2s; text-shadow: 0 1px 6px #1976d21a;
+}}
+@keyframes fadeUp {{0% {{opacity:0;transform:translateY(28px);}}100% {{opacity:1;transform:translateY(0);}}}}
 </style>
 """, unsafe_allow_html=True)
 
-# ========== بيانات القوالب ==========
+# ==== TEMPLATES ====
 templates = {
     'en': """Hello 👋
 
@@ -169,25 +187,20 @@ Saludos cordiales,
 Departamento de Ventas"""
 }
 
-# ========== START UI ==========
+# ==== UI ====
 with st.container():
     st.markdown('<div class="glass-box">', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="karim-logo">'
-        'KARIM <span class="whats-icon">🟢</span>'
-        '</div>', unsafe_allow_html=True
-    )
+    st.markdown('<div class="karim-logo">KARIM</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-pro">WhatsApp Broadcast Sender</div>', unsafe_allow_html=True)
 
     mode = st.radio(
-        "اختر النمط:",
-        ["النمط البسيط: أرقام فقط", "النمط الذكي: تخصيص اسم ودولة"],
+        "Choose mode:",
+        ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
         horizontal=True,
         key="mode"
     )
 
-    # ------ SIMPLE MODE ------
-    if mode == "النمط البسيط: أرقام فقط":
+    if mode == "Simple: Numbers Only":
         lang = st.radio("Language", [
             "🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"
         ], horizontal=True, key="lang_radio")
@@ -209,26 +222,24 @@ with st.container():
         names = [''] * len(numbers)
         countries = [''] * len(numbers)
         msg_template = templates[lang_code]
-    # ------ SMART MODE ------
     else:
         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio2")
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
-        st.info("يمكنك رفع ملف CSV (number,name,country) أو إدخال البيانات يدويًا 👇")
-        data_opt = st.radio("طريقة الإدخال:", ["رفع ملف CSV", "إدخال يدوي"], horizontal=True, key="smart_input")
-        import pandas as pd
+        st.info("You can upload a CSV file (number,name,country) or enter data manually 👇")
+        data_opt = st.radio("Input method:", ["Upload CSV file", "Manual entry"], horizontal=True, key="smart_input")
         df = None
-        if data_opt == "رفع ملف CSV":
-            uploaded_file = st.file_uploader("ارفع ملف CSV بصيغة (number,name,country)", type=["csv"])
+        if data_opt == "Upload CSV file":
+            uploaded_file = st.file_uploader("Upload CSV (number,name,country)", type=["csv"])
             if uploaded_file is not None:
                 df = pd.read_csv(uploaded_file).dropna(subset=["number"])
                 df = df.astype(str)
-                st.success(f"تم تحميل {len(df)} جهة اتصال.")
+                st.success(f"{len(df)} contacts loaded.")
         else:
-            st.info("أدخل البيانات يدويًا (يمكنك إضافة أو حذف الصفوف):")
+            st.info("Enter data manually (add/remove rows as needed):")
             example_data = pd.DataFrame({
                 'number': ['201111223344', '971500000001'],
-                'name': ['محمد', 'أحمد'],
-                'country': ['مصر', 'الإمارات']
+                'name': ['Mohamed', 'Ahmed'],
+                'country': ['Egypt', 'UAE']
             })
             df = st.data_editor(
                 example_data,
@@ -244,8 +255,8 @@ with st.container():
         else:
             numbers, names, countries = [], [], []
         msg_template = st.text_area(
-            "اكتب قالب الرسالة (استخدم {name} و{country} و{number} للمتغيرات):",
-            value="مرحبًا {name} من {country}، لدينا منتجات جديدة تناسب السوق {country}!",
+            "Write message template (use {name}, {country}, {number}):",
+            value="Hello {name} from {country}, we have new products for the {country} market!",
             height=120,
             key="smart_template"
         )
@@ -255,13 +266,13 @@ with st.container():
     if 'skipped' not in st.session_state:
         st.session_state.skipped = set()
 
-    # Progress Circle
     if numbers:
         percent = int((st.session_state.current+1) / len(numbers) * 100)
         st.markdown(
             f'''
+            <div style="margin-bottom:6px;"><b style="color:{PRIMARY_DARK};font-size:1.05rem">Progress:</b></div>
             <div class="progress-outer">
-                <div class="progress-circle" style="background:conic-gradient(#70d1b9 {percent}%, #f3ecff {percent}% 100%);">
+                <div class="progress-circle" style="background:conic-gradient({ACCENT} {percent}%, #e3f2fd {percent}% 100%);">
                     <span class="progress-num">{st.session_state.current+1}/{len(numbers)}</span>
                 </div>
             </div>
@@ -273,7 +284,7 @@ with st.container():
         st.session_state.skipped = set()
 
     if numbers:
-        # تحديد الرسالة الفعلية لكل جهة اتصال
+        # Personalized msg for smart mode
         try:
             msg_personal = msg_template.format(
                 name=names[st.session_state.current] if names else '',
@@ -281,35 +292,35 @@ with st.container():
                 number=numbers[st.session_state.current]
             )
         except Exception as e:
-            msg_personal = "⚠️ تحقق من القالب أو البيانات"
+            msg_personal = "⚠️ Please check your template or data"
         message = st.text_area(
             "Message",
             value=msg_personal,
             key="msgboxfinal",
-            help="يمكنك التعديل قبل الإرسال",
-            height=130,
+            help="Edit before sending if you want",
+            height=120,
         )
         st.write(f"**Contact:** {min(st.session_state.current+1, len(numbers))} / {len(numbers)}")
         info = f'{numbers[st.session_state.current]}'
-        if mode == "النمط الذكي: تخصيص اسم ودولة" and names and countries:
+        if mode == "Smart: Personalized Name & Country" and names and countries:
             info += f" — {names[st.session_state.current]} — {countries[st.session_state.current]}"
         st.write(
-            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#70d1b9,#c7bbf4);color:#4a3968;'
-            'border-radius:22px;font-family:Cairo,sans-serif;font-size:1.09rem;font-weight:bold;'
-            'box-shadow:0 1px 7px #b2e7e7;margin-bottom:10px;">'
+            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#e3f2fd,#b3ecf7);color:{PRIMARY_DARK};'
+            'border-radius:20px;font-family:Roboto,sans-serif;font-size:1.08rem;font-weight:bold;'
+            'box-shadow:0 1px 7px #1976d217;margin-bottom:10px;">'
             f'{info}</span>',
             unsafe_allow_html=True
         )
         st.markdown(
             '<div class="numbers-list-karim">' +
             "".join([
-                f"<div class='{ 'active' if i == st.session_state.current else ''}'>{i+1}. {numbers[i]}{(' - ' + names[i]) if (mode=='النمط الذكي: تخصيص اسم ودولة' and names and names[i]) else ''}{(' - ' + countries[i]) if (mode=='النمط الذكي: تخصيص اسم ودولة' and countries and countries[i]) else ''}</div>"
+                f"<div class='{ 'active' if i == st.session_state.current else ''}'>{i+1}. {numbers[i]}{(' - ' + names[i]) if (mode=='Smart: Personalized Name & Country' and names and names[i]) else ''}{(' - ' + countries[i]) if (mode=='Smart: Personalized Name & Country' and countries and countries[i]) else ''}</div>"
                 for i in range(len(numbers))
             ]) +
             "</div>", unsafe_allow_html=True
         )
 
-        cols = st.columns([1.2, 1.2, 1.6, 1.2])
+        cols = st.columns([1.2, 1.2, 1.7, 1.2])
         prev_disabled = st.session_state.current <= 0
         next_disabled = st.session_state.current >= len(numbers)-1
         skip_disabled = numbers[st.session_state.current] in st.session_state.skipped
@@ -332,8 +343,8 @@ with st.container():
                 url = f"https://wa.me/{num}?text={msg_encoded}"
             st.markdown(
                 f"<div style='text-align:center; margin-top:6px;'>"
-                f"<a href='{url}' target='_blank' style='font-weight:bold; color:#63b37e; font-size:18px; letter-spacing:.5px;'>"
-                "🚀 اضغط هنا إذا لم يفتح واتساب تلقائيًا</a></div>", unsafe_allow_html=True
+                f"<a href='{url}' target='_blank' style='font-weight:bold; color:{PRIMARY}; font-size:18px; letter-spacing:.5px;'>"
+                "🚀 Click here if WhatsApp didn't open automatically</a></div>", unsafe_allow_html=True
             )
             st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
 
@@ -343,5 +354,4 @@ with st.container():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:#63b37e;">Karim OTHMAN 😍</span> &copy; 2025</div>', unsafe_allow_html=True)
-
+st.markdown(f'<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:{ACCENT};">Karim OTHMAN 😍</span> &copy; 2025</div>', unsafe_allow_html=True)
