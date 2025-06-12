@@ -4,129 +4,134 @@ import urllib.parse
 
 st.set_page_config(page_title="KARIM | WhatsApp Sender PRO", layout="centered")
 
-# --- Material Design Colors ---
-PRIMARY = "#1976d2"        # Blue 700
-PRIMARY_DARK = "#115293"   # Blue 900
-PRIMARY_LIGHT = "#63a4ff"  # Blue 400
-ACCENT = "#26c6da"         # Cyan 400
-BG = "#f5f7fa"             # Background grey
-SURFACE = "#fff"
-SHADOW = "0 8px 40px 0 #1976d22a, 0 1.5px 10px #26c6da22"
-TEXT_MAIN = "#212121"      # Main dark text
-TEXT_FAINT = "#636e72"     # Muted text
-
-st.markdown(f"""
+# === أفضل ستايل Material Design حديث (CSS) ===
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Cairo:wght@700&display=swap');
-html, body, [class*="css"] {{
+html, body, [class*="css"] {
   font-family: 'Roboto', 'Cairo', Arial, sans-serif !important;
-  background: {BG} !important;
-  color: {TEXT_MAIN};
-}}
-.stApp {{
-  background: {BG} !important;
+  background: #f5f7fa !important;
+  color: #222 !important;
+}
+.stApp {
+  background: radial-gradient(circle at 50% 0%, #eaf6ff 50%, #f5f7fa 100%) !important;
   min-height: 100vh;
-}}
-.glass-box {{
-  background: {SURFACE};
-  border-radius: 18px;
-  box-shadow: {SHADOW};
-  padding: 32px 18px 16px 18px;
-  margin: 28px auto 16px auto;
-  max-width: 490px;
-  border: 1.5px solid #e3e8ee;
-  animation: fadeInCard .8s cubic-bezier(.56,.19,.34,.98);
-}}
-@keyframes fadeInCard {{
-  0% {{opacity:0; transform: scale(.96) translateY(40px);}}
-  100% {{opacity:1; transform: scale(1) translateY(0);}}
-}}
-.karim-logo {{
+}
+.glass-box {
+  background: #fff;
+  border-radius: 19px;
+  box-shadow: 0 8px 38px 0 #1976d218, 0 2px 8px #26c6da19;
+  padding: 34px 22px 22px 22px;
+  margin: 38px auto 17px auto;
+  max-width: 530px;
+  border: 1.4px solid #e4e8fd36;
+  animation: fadeInCard .7s cubic-bezier(.56,.19,.34,.98);
+  transition: box-shadow .22s cubic-bezier(.3,1.8,.6,1), transform .2s;
+}
+.glass-box:hover {
+  box-shadow: 0 18px 60px 0 #1976d243, 0 2px 18px #26c6da38;
+  transform: translateY(-3px) scale(1.012);
+}
+@keyframes fadeInCard {
+  0% {opacity:0; transform: scale(.95) translateY(40px);}
+  100% {opacity:1; transform: scale(1) translateY(0);}
+}
+.karim-logo {
   font-family: 'Cairo', 'Roboto', sans-serif;
-  font-size: 2.1rem; font-weight: 900; letter-spacing: 7px;
-  margin-bottom: .4rem; text-align: center;
-  background: linear-gradient(90deg, {PRIMARY} 35%, {ACCENT} 90%);
+  font-size: 2.3rem; font-weight: 900; letter-spacing: 8px;
+  margin-bottom: 0.1rem; text-align: center;
+  background: linear-gradient(90deg, #1976d2 30%, #26c6da 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; text-fill-color: transparent;
   user-select: none;
-  text-shadow: 0 3px 15px #1976d22e;
-  animation: popIn 1.1s cubic-bezier(.31,1.37,.71,1);
-}}
-@keyframes popIn {{
-  0% {{letter-spacing:0px;opacity:0;transform: scale(.7);}}
-  80% {{letter-spacing:11px;transform: scale(1.04);}}
-  100% {{opacity:1;}}
-}}
-.title-pro {{
-  font-size: 1.18rem;
+  text-shadow: 0 3px 15px #1976d238;
+  animation: popIn 1s cubic-bezier(.31,1.37,.71,1);
+}
+@keyframes popIn {
+  0% {letter-spacing:0px;opacity:0;transform: scale(.7);}
+  80% {letter-spacing:14px;transform: scale(1.04);}
+  100% {opacity:1;}
+}
+.title-pro {
+  font-size: 1.14rem;
   margin-bottom: 1.1rem;
-  color: {PRIMARY};
-  text-align: center; letter-spacing: 1.4px;
+  color: #1976d2;
+  text-align: center; letter-spacing: 1.6px;
   font-family: 'Cairo', 'Roboto', sans-serif;
   font-weight: bold;
   animation: fadeDown .7s;
-}}
-@keyframes fadeDown {{
-  0% {{opacity:0;transform:translateY(-22px);}}
-  100% {{opacity:1;transform:translateY(0);}}
-}}
-.numbers-list-karim {{
-  display: flex; flex-direction: column; gap: 2.5px; font-size: 13.8px;
-  background: #f7fafd; border-radius: 7px; padding: 8px 10px 8px 11px; margin-bottom: 14px;
-  max-height: 85px; overflow-y: auto; color: {PRIMARY_DARK};
-  border: 1.1px solid #e3e8ee;
-  box-shadow: 0 2px 9px #1976d219;
+}
+@keyframes fadeDown {
+  0% {opacity:0;transform:translateY(-28px);}
+  100% {opacity:1;transform:translateY(0);}
+}
+.stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
+  color: #1976d2 !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em;
+  font-size: 1.01em;
+}
+.stRadio span, .stRadio div, .stRadio p, .stInfo {
+  color: #212121 !important;
+  font-weight: 600 !important;
+}
+input, textarea {
+  border-radius: 10px !important;
+  background: linear-gradient(90deg,#fafdff,#f4f8fa 80%);
+  box-shadow: 0 2px 7px #e3e8ee24;
+  transition: border .16s;
+  color: #222 !important;
+}
+input:focus, textarea:focus {
+  border: 1.5px solid #1976d2 !important;
+  background: #fff !important;
+}
+.stButton>button {
+  background: linear-gradient(90deg, #1976d2 40%, #26c6da 100%);
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-weight: bold;
   font-family: 'Roboto', 'Cairo', sans-serif;
-}}
-.numbers-list-karim .active {{
-  background: linear-gradient(90deg,#e3f2fd 55%,#b3ecf7 100%);
-  border-radius: 6px; font-weight: bold; color: {PRIMARY};
-  font-size: 1.03em; border-left: 4.2px solid {ACCENT}; padding-left: 3px;
-}}
-button[kind="primary"], button[data-testid="baseButton-primary"] {{
-  background: linear-gradient(90deg, {PRIMARY} 35%, {ACCENT} 100%);
-  border-radius: 12px !important; color: #fff !important; font-weight: bold;
-  box-shadow: 0 4px 14px #26c6da30;
-  border: none !important; font-family: 'Roboto', 'Cairo', sans-serif;
-  font-size: 1.07em; letter-spacing:.3px;
-  transition: box-shadow 0.18s, transform 0.18s;
-}}
-button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {{
-  background: linear-gradient(90deg, {ACCENT} 15%, {PRIMARY} 100%);
-  box-shadow: 0 8px 22px #1976d248;
-  transform: translateY(-2px) scale(1.045);
-}}
-[data-testid="collapsedControl"] {{display: none;}}
-.footer-karim {{
-  margin-top: 2.0rem; font-size: 1.05rem; color: {PRIMARY_DARK};
+  font-size: 1.06em; letter-spacing:.2px;
+  box-shadow: 0 4px 16px #1976d238;
+  transition: box-shadow .18s, transform .14s, background .2s;
+  border: none !important;
+}
+.stButton>button:hover {
+  background: linear-gradient(90deg, #26c6da 25%, #1976d2 100%);
+  box-shadow: 0 8px 26px #1976d248;
+  transform: translateY(-2px) scale(1.035);
+}
+.stButton>button:active {
+  transform: scale(.98);
+  box-shadow: 0 2px 4px #1976d226;
+}
+.numbers-list-karim {
+  display: flex; flex-direction: column; gap: 2.5px; font-size: 13.7px;
+  background: #f7fafd; border-radius: 8px; padding: 7px 10px 7px 13px; margin-bottom: 11px;
+  max-height: 95px; overflow-y: auto; color: #1565c0;
+  border: 1.1px solid #e3e8ee;
+  box-shadow: 0 2px 9px #1976d217;
+  font-family: 'Roboto', 'Cairo', sans-serif;
+}
+.numbers-list-karim .active {
+  background: linear-gradient(90deg,#e3f2fd 58%,#b3ecf7 100%);
+  border-radius: 7px; font-weight: bold; color: #1976d2;
+  font-size: 1.07em; border-left: 4px solid #26c6da; padding-left: 3px;
+  box-shadow: 0 2px 9px #1976d220;
+}
+.footer-karim {
+  margin-top: 2.0rem; font-size: 1.05rem; color: #1565c0;
   text-align: center; letter-spacing: 1.0px;
   font-family: 'Cairo', 'Roboto', sans-serif;
-  opacity: .85; font-weight: bold; padding-bottom: 12px;
-  animation: fadeUp 1.2s; text-shadow: 0 1px 6px #1976d21a;
-}}
-
-/* *** التباين العالي: *** */
-.stRadio label, .stRadio div, .stRadio span, .stRadio p,
-.stTextInput label, .stTextArea label,
-.stMarkdown, .stSelectbox label, .stInfo, .stFileUploader label, .stDataFrame label {{
-  color: #222 !important;
-  font-weight: 600 !important;
-  letter-spacing: .1px;
-}}
-
-.stTextInput input, .stTextArea textarea {{
-  background: #fff !important;
-  color: #222 !important;
-}}
-
-.stButton>button {{
-  box-shadow: 0 4px 16px #1976d240;
-}}
-@keyframes fadeUp {{0% {{opacity:0;transform:translateY(28px);}}100% {{opacity:1;transform:translateY(0);}}}}
+  opacity: .87; font-weight: bold; padding-bottom: 11px;
+  animation: fadeUp 1.1s; text-shadow: 0 1px 7px #1976d210;
+}
+@keyframes fadeUp {0% {opacity:0;transform:translateY(22px);}100% {opacity:1;transform:translateY(0);}}
 </style>
 """, unsafe_allow_html=True)
 
-# ==== TEMPLATES ====
+# === Templates ===
 templates = {
     'en': """Hello 👋
 
@@ -205,7 +210,6 @@ Saludos cordiales,
 Departamento de Ventas"""
 }
 
-# ==== UI ====
 with st.container():
     st.markdown('<div class="glass-box">', unsafe_allow_html=True)
     st.markdown('<div class="karim-logo">KARIM</div>', unsafe_allow_html=True)
@@ -288,10 +292,12 @@ with st.container():
         percent = int((st.session_state.current+1) / len(numbers) * 100)
         st.markdown(
             f'''
-            <div style="margin-bottom:6px;"><b style="color:{PRIMARY_DARK};font-size:1.05rem">Progress:</b></div>
-            <div class="progress-outer">
-                <div class="progress-circle" style="background:conic-gradient({ACCENT} {percent}%, #e3f2fd {percent}% 100%);">
-                    <span class="progress-num">{st.session_state.current+1}/{len(numbers)}</span>
+            <div style="margin-bottom:6px;"><b style="color:#1565c0;font-size:1.05rem">Progress:</b></div>
+            <div style="margin-bottom:9px;">
+                <div style="width:62px;height:62px;margin:auto;position:relative;">
+                    <div style="width:62px;height:62px;border-radius:50%;background:conic-gradient(#26c6da {percent}%, #e3f2fd {percent}% 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #1976d225;position:absolute;top:0;left:0;animation:popIn .7s;">
+                        <span style="font-size:1.1rem;color:#1565c0;font-family:'Cairo',sans-serif;font-weight:900;letter-spacing:2px;z-index:1;margin:auto;">{st.session_state.current+1}/{len(numbers)}</span>
+                    </div>
                 </div>
             </div>
             ''', unsafe_allow_html=True
@@ -323,9 +329,9 @@ with st.container():
         if mode == "Smart: Personalized Name & Country" and names and countries:
             info += f" — {names[st.session_state.current]} — {countries[st.session_state.current]}"
         st.write(
-            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#e3f2fd,#b3ecf7);color:{PRIMARY_DARK};'
-            'border-radius:20px;font-family:Roboto,sans-serif;font-size:1.08rem;font-weight:bold;'
-            'box-shadow:0 1px 7px #1976d217;margin-bottom:10px;">'
+            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#e3f2fd,#b3ecf7);color:#1565c0;'
+            'border-radius:20px;font-family:Roboto,sans-serif;font-size:1.07rem;font-weight:bold;'
+            'box-shadow:0 1px 7px #1976d217;margin-bottom:9px;">'
             f'{info}</span>',
             unsafe_allow_html=True
         )
@@ -361,7 +367,7 @@ with st.container():
                 url = f"https://wa.me/{num}?text={msg_encoded}"
             st.markdown(
                 f"<div style='text-align:center; margin-top:6px;'>"
-                f"<a href='{url}' target='_blank' style='font-weight:bold; color:{PRIMARY}; font-size:18px; letter-spacing:.5px;'>"
+                f"<a href='{url}' target='_blank' style='font-weight:bold; color:#1976d2; font-size:18px; letter-spacing:.5px;'>"
                 "🚀 Click here if WhatsApp didn't open automatically</a></div>", unsafe_allow_html=True
             )
             st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
@@ -372,4 +378,4 @@ with st.container():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown(f'<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:{ACCENT};">Karim OTHMAN 😍</span> &copy; 2025</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:#1976d2;">Karim OTHMAN 😍</span> &copy; 2025</div>', unsafe_allow_html=True)
