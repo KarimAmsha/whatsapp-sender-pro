@@ -63,6 +63,11 @@ body, [class*="css"] {
   0% {opacity:0;transform:translateY(-22px);}
   100% {opacity:1;transform:translateY(0);}
 }
+hr {
+  border: none;
+  border-top: 1.3px solid #e3e9f8;
+  margin: 23px 0 23px 0;
+}
 .stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
   color: #2563eb !important;
   font-weight: 700 !important;
@@ -216,12 +221,16 @@ with st.container():
     st.markdown('<div class="karim-logo">KARIM</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-pro">WhatsApp Broadcast Sender</div>', unsafe_allow_html=True)
 
+    st.markdown('<hr>', unsafe_allow_html=True)
+
     mode = st.radio(
         "Choose mode:",
         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
         horizontal=True,
         key="mode"
     )
+
+    st.markdown('<hr>', unsafe_allow_html=True)
 
     # ------------- Simple Mode -------------
     if mode == "Simple: Numbers Only":
@@ -251,14 +260,24 @@ with st.container():
         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio2")
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
         st.info("You can upload a CSV file (number,name,country) or enter data manually 👇")
+        # Downloadable example CSV
+        st.download_button(
+            label="⬇️ Download example CSV",
+            data="number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n",
+            file_name="example_contacts.csv",
+            mime="text/csv",
+        )
         data_opt = st.radio("Input method:", ["Upload CSV file", "Manual entry"], horizontal=True, key="smart_input")
         df = None
         if data_opt == "Upload CSV file":
             uploaded_file = st.file_uploader("Upload CSV (number,name,country)", type=["csv"])
             if uploaded_file is not None:
-                df = pd.read_csv(uploaded_file).dropna(subset=["number"])
-                df = df.astype(str)
-                st.success(f"{len(df)} contacts loaded.")
+                try:
+                    df = pd.read_csv(uploaded_file).dropna(subset=["number"])
+                    df = df.astype(str)
+                    st.success(f"{len(df)} contacts loaded.")
+                except Exception as e:
+                    st.error("Invalid CSV file or missing columns (number,name,country).")
         else:
             st.info("Enter data manually (add/remove rows as needed):")
             example_data = pd.DataFrame({
@@ -286,6 +305,7 @@ with st.container():
             key="smart_template"
         )
 
+    # ======= حافظ التقدم حتى بعد الريفرش (باستخدام session_state) =======
     if 'current' not in st.session_state:
         st.session_state.current = 0
     if 'skipped' not in st.session_state:
