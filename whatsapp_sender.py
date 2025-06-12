@@ -4,128 +4,133 @@ import urllib.parse
 
 st.set_page_config(page_title="KARIM | WhatsApp Sender PRO", layout="centered")
 
-# === أفضل ستايل Material Design حديث (CSS) ===
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Cairo:wght@700&display=swap');
-html, body, [class*="css"] {
-  font-family: 'Roboto', 'Cairo', Arial, sans-serif !important;
-  background: #f5f7fa !important;
-  color: #222 !important;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+body, [class*="css"] {
+  font-family: 'Inter', 'Cairo', Arial, sans-serif !important;
 }
 .stApp {
-  background: radial-gradient(circle at 50% 0%, #eaf6ff 50%, #f5f7fa 100%) !important;
+  background: linear-gradient(135deg, #222851 0%, #2a365b 50%, #37338a 100%) fixed !important;
   min-height: 100vh;
 }
 .glass-box {
-  background: #fff;
-  border-radius: 19px;
-  box-shadow: 0 8px 38px 0 #1976d218, 0 2px 8px #26c6da19;
-  padding: 34px 22px 22px 22px;
-  margin: 38px auto 17px auto;
-  max-width: 530px;
-  border: 1.4px solid #e4e8fd36;
-  animation: fadeInCard .7s cubic-bezier(.56,.19,.34,.98);
+  background: rgba(26,27,44,0.92);
+  border-radius: 26px;
+  box-shadow: 0 10px 40px #302e7b44, 0 2.5px 14px #00ffd855;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 38px 26px 22px 26px;
+  margin: 40px auto 16px auto;
+  max-width: 520px;
+  border: 2px solid #00ffb05e;
+  animation: popGlass .9s cubic-bezier(.56,.19,.34,.98);
   transition: box-shadow .22s cubic-bezier(.3,1.8,.6,1), transform .2s;
 }
 .glass-box:hover {
-  box-shadow: 0 18px 60px 0 #1976d243, 0 2px 18px #26c6da38;
-  transform: translateY(-3px) scale(1.012);
+  box-shadow: 0 18px 60px 0 #19e2e999, 0 2px 18px #00ffd870;
+  transform: translateY(-4px) scale(1.013);
 }
-@keyframes fadeInCard {
-  0% {opacity:0; transform: scale(.95) translateY(40px);}
-  100% {opacity:1; transform: scale(1) translateY(0);}
+@keyframes popGlass {
+  0% {opacity:0;transform:translateY(60px) scale(.97);}
+  100% {opacity:1;transform:translateY(0) scale(1);}
 }
 .karim-logo {
-  font-family: 'Cairo', 'Roboto', sans-serif;
-  font-size: 2.3rem; font-weight: 900; letter-spacing: 8px;
-  margin-bottom: 0.1rem; text-align: center;
-  background: linear-gradient(90deg, #1976d2 30%, #26c6da 100%);
+  font-family: 'Cairo', 'Inter', sans-serif;
+  font-size: 2.45rem; font-weight: 900; letter-spacing: 10px;
+  margin-bottom: 0.2rem; text-align: center;
+  background: linear-gradient(90deg, #18e6ef 15%, #74e1fe 50%, #ac77ff 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; text-fill-color: transparent;
   user-select: none;
-  text-shadow: 0 3px 15px #1976d238;
-  animation: popIn 1s cubic-bezier(.31,1.37,.71,1);
+  filter: drop-shadow(0 1px 15px #49f8ffa2);
+  text-shadow: 0 3px 15px #55d6f638;
+  animation: logoWow .9s cubic-bezier(.21,1.47,.81,1);
 }
-@keyframes popIn {
+@keyframes logoWow {
   0% {letter-spacing:0px;opacity:0;transform: scale(.7);}
-  80% {letter-spacing:14px;transform: scale(1.04);}
+  60% {letter-spacing:16px;}
   100% {opacity:1;}
 }
 .title-pro {
-  font-size: 1.14rem;
+  font-size: 1.18rem;
   margin-bottom: 1.1rem;
-  color: #1976d2;
-  text-align: center; letter-spacing: 1.6px;
-  font-family: 'Cairo', 'Roboto', sans-serif;
+  color: #5ee8fe;
+  text-align: center;
+  letter-spacing: 1.6px;
+  font-family: 'Cairo', 'Inter', sans-serif;
   font-weight: bold;
-  animation: fadeDown .7s;
+  animation: fadeDown .8s;
+  text-shadow: 0 1px 9px #5ee8fea8;
 }
 @keyframes fadeDown {
-  0% {opacity:0;transform:translateY(-28px);}
+  0% {opacity:0;transform:translateY(-24px);}
   100% {opacity:1;transform:translateY(0);}
 }
 .stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
-  color: #1976d2 !important;
+  color: #fff !important;
   font-weight: 700 !important;
   letter-spacing: .06em;
   font-size: 1.01em;
 }
 .stRadio span, .stRadio div, .stRadio p, .stInfo {
-  color: #212121 !important;
+  color: #c8e6ff !important;
   font-weight: 600 !important;
 }
 input, textarea {
-  border-radius: 10px !important;
-  background: linear-gradient(90deg,#fafdff,#f4f8fa 80%);
-  box-shadow: 0 2px 7px #e3e8ee24;
-  transition: border .16s;
-  color: #222 !important;
+  border-radius: 11px !important;
+  background: #25293f !important;
+  color: #f9fdff !important;
+  border: 1.4px solid #69ffd6;
+  box-shadow: 0 2px 7px #19e2e933;
+  transition: border .18s, background .14s;
+  font-size: 1.07em;
 }
 input:focus, textarea:focus {
-  border: 1.5px solid #1976d2 !important;
-  background: #fff !important;
+  border: 2.2px solid #00e2fd !important;
+  background: #2a324c !important;
 }
 .stButton>button {
-  background: linear-gradient(90deg, #1976d2 40%, #26c6da 100%);
-  border-radius: 12px !important;
-  color: #fff !important;
+  background: linear-gradient(90deg, #00ffd8 5%, #00e2fd 60%, #a189ff 100%);
+  border-radius: 13px !important;
+  color: #161b26 !important;
   font-weight: bold;
-  font-family: 'Roboto', 'Cairo', sans-serif;
-  font-size: 1.06em; letter-spacing:.2px;
-  box-shadow: 0 4px 16px #1976d238;
-  transition: box-shadow .18s, transform .14s, background .2s;
+  font-family: 'Inter', 'Cairo', sans-serif;
+  font-size: 1.09em; letter-spacing:.17px;
+  box-shadow: 0 4px 18px #00e2fd42;
   border: none !important;
+  transition: box-shadow .18s, transform .15s, background .2s;
 }
 .stButton>button:hover {
-  background: linear-gradient(90deg, #26c6da 25%, #1976d2 100%);
-  box-shadow: 0 8px 26px #1976d248;
-  transform: translateY(-2px) scale(1.035);
+  background: linear-gradient(90deg, #a189ff 0%, #00ffd8 100%);
+  box-shadow: 0 8px 26px #55d6f677;
+  color: #181f27 !important;
+  transform: translateY(-2px) scale(1.032);
 }
 .stButton>button:active {
   transform: scale(.98);
-  box-shadow: 0 2px 4px #1976d226;
+  box-shadow: 0 2px 4px #00ffd839;
 }
 .numbers-list-karim {
   display: flex; flex-direction: column; gap: 2.5px; font-size: 13.7px;
-  background: #f7fafd; border-radius: 8px; padding: 7px 10px 7px 13px; margin-bottom: 11px;
-  max-height: 95px; overflow-y: auto; color: #1565c0;
-  border: 1.1px solid #e3e8ee;
-  box-shadow: 0 2px 9px #1976d217;
-  font-family: 'Roboto', 'Cairo', sans-serif;
+  background: #24273d; border-radius: 8px; padding: 7px 10px 7px 13px; margin-bottom: 11px;
+  max-height: 95px; overflow-y: auto; color: #6aeeff;
+  border: 1.2px solid #00ffd829;
+  box-shadow: 0 2px 9px #00ffd817;
+  font-family: 'Inter', 'Cairo', sans-serif;
 }
 .numbers-list-karim .active {
-  background: linear-gradient(90deg,#e3f2fd 58%,#b3ecf7 100%);
-  border-radius: 7px; font-weight: bold; color: #1976d2;
-  font-size: 1.07em; border-left: 4px solid #26c6da; padding-left: 3px;
-  box-shadow: 0 2px 9px #1976d220;
+  background: linear-gradient(90deg,#1ae6ef60 60%,#a189ff80 100%);
+  border-radius: 7px; font-weight: bold; color: #fff;
+  font-size: 1.07em; border-left: 5px solid #00ffd8; padding-left: 3px;
+  box-shadow: 0 2px 9px #19e2e941;
 }
 .footer-karim {
-  margin-top: 2.0rem; font-size: 1.05rem; color: #1565c0;
+  margin-top: 2.1rem; font-size: 1.09rem; color: #61e5ff;
   text-align: center; letter-spacing: 1.0px;
-  font-family: 'Cairo', 'Roboto', sans-serif;
-  opacity: .87; font-weight: bold; padding-bottom: 11px;
-  animation: fadeUp 1.1s; text-shadow: 0 1px 7px #1976d210;
+  font-family: 'Cairo', 'Inter', sans-serif;
+  opacity: .92; font-weight: bold; padding-bottom: 12px;
+  animation: fadeUp 1.2s; text-shadow: 0 1px 7px #1976d210;
 }
 @keyframes fadeUp {0% {opacity:0;transform:translateY(22px);}100% {opacity:1;transform:translateY(0);}}
 </style>
