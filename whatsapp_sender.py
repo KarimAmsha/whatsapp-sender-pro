@@ -1,8 +1,23 @@
 import streamlit as st
 import pandas as pd
 import urllib.parse
+import re
 
 st.set_page_config(page_title="KARIM | WhatsApp Sender PRO", layout="centered")
+
+# فلترة الأرقام لأي نص وتوحيدها بصيغة رقمية فقط
+def extract_numbers(text):
+    lines = text.replace(",", "\n").splitlines()
+    numbers = []
+    for line in lines:
+        digits = re.sub(r'\D', '', line)  # يزيل أي شيء غير رقم
+        if len(digits) >= 8:
+            numbers.append(digits)
+    return numbers
+
+def clean_number(n):
+    # من أي نص (أو رقم) إلى أرقام فقط
+    return re.sub(r'\D', '', str(n))
 
 st.markdown("""
 <style>
@@ -220,7 +235,6 @@ with st.container():
     st.markdown('<div class="glass-box">', unsafe_allow_html=True)
     st.markdown('<div class="karim-logo">KARIM</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-pro">WhatsApp Broadcast Sender</div>', unsafe_allow_html=True)
-
     st.markdown('<hr>', unsafe_allow_html=True)
 
     mode = st.radio(
@@ -246,21 +260,22 @@ with st.container():
         }[lang]
         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio")
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
-        numbers_raw = st.text_area("Numbers (comma/newline separated)", placeholder="Paste numbers, comma or newline separated")
-        numbers = [
-            n.strip().replace("-", "").replace(" ", "")
-            for n in numbers_raw.replace(",", "\n").split("\n")
-            if n.strip() and n.strip().replace("-", "").replace(" ", "").isdigit() and len(n.strip().replace("-", "").replace(" ", "")) >= 8
-        ]
+        numbers_raw = st.text_area("Numbers (comma/newline/any format)", placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)")
+        numbers = extract_numbers(numbers_raw)
         names = [''] * len(numbers)
         countries = [''] * len(numbers)
         msg_template = templates[lang_code]
+
+        if numbers_raw:
+            st.markdown("#### Filtered Numbers:")
+            st.code('\n'.join(numbers), language="text")
+            st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt")
+
     # ------------- Smart Mode -------------
     else:
         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio2")
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
         st.info("You can upload a CSV file (number,name,country) or enter data manually 👇")
-        # Downloadable example CSV
         st.download_button(
             label="⬇️ Download example CSV",
             data="number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n",
@@ -274,6 +289,8 @@ with st.container():
             if uploaded_file is not None:
                 try:
                     df = pd.read_csv(uploaded_file).dropna(subset=["number"])
+                    df["number"] = df["number"].apply(clean_number)  # فلترة الأرقام
+                    df = df[df["number"].str.len() >= 8]
                     df = df.astype(str)
                     st.success(f"{len(df)} contacts loaded.")
                 except Exception as e:
@@ -291,6 +308,8 @@ with st.container():
                 use_container_width=True,
                 key="editor"
             )
+            df["number"] = df["number"].apply(clean_number)
+            df = df[df["number"].str.len() >= 8]
             df = df.astype(str)
         if df is not None and not df.empty:
             numbers = df['number'].tolist()
@@ -304,6 +323,11 @@ with st.container():
             height=120,
             key="smart_template"
         )
+
+        if df is not None and not df.empty:
+            st.markdown("#### Filtered Numbers:")
+            st.code('\n'.join(numbers), language="text")
+            st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt")
 
     # ======= حافظ التقدم حتى بعد الريفرش (باستخدام session_state) =======
     if 'current' not in st.session_state:
