@@ -136,174 +136,177 @@ Departamento de Ventas"""
 # ==== CSS (Colors + Dashboard) ====
 st.markdown("""
 <style>
+/* خلفية عامة */
 .stApp {
     background: linear-gradient(120deg, #f6fbff 85%, #e0e7ef 100%) fixed !important;
     font-family: 'Inter', Arial, sans-serif !important;
+    font-size: 15px !important;
 }
-.block-container {padding-top:24px; padding-bottom:16px;}
-/* عمود جانبي */
+.block-container {padding-top:18px; padding-bottom:12px;}
+
+/* الجانبين */
 .karim-sider, .karim-sider-right {
     background: linear-gradient(120deg, #e3f0ff 80%, #f3f8ff 100%);
     border-radius: 18px;
-    box-shadow: 0 6px 26px #38bdf822;
-    padding: 22px 16px 16px 16px;
-    margin: 18px 0 12px 0;
-    min-width: 210px;
-    max-width: 340px;
-    font-family:'Inter',sans-serif;
-    font-size: 1.06em;
+    box-shadow: 0 6px 22px #38bdf81a;
+    padding: 17px 12px 12px 12px;
+    margin: 10px 0 10px 0;
+    min-width: 210px; max-width: 340px;
+    font-size: 0.97em;
     color:#182244 !important;
 }
 .karim-sider .sider-title, .karim-sider-right .sider-title {
-    color: #1877f2; font-size: 1.15em; font-weight: 900; letter-spacing: 2.1px; margin-bottom: 12px;
+    color: #1877f2; font-size: 1.10em; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 7px;
 }
 .karim-sider .sider-label, .karim-sider-right .sider-label {
-    color:#1565c0;font-size:1.04em;font-weight:700;
+    color:#1565c0;font-size:1em;font-weight:700;
 }
-.karim-sider .sider-section, .karim-sider-right .sider-section {margin:11px 0;}
-.karim-sider .sider-logo, .karim-sider-right .sider-logo {text-align:center;margin:14px 0;}
-.karim-sider .sider-logo span, .karim-sider-right .sider-logo span {font-size:2.1em;}
-.karim-sider code, .karim-sider-right code {background:#222f3e;padding:3px 8px;border-radius:5px;font-size:.93em;color:#5eead4;}
+.karim-sider .sider-section, .karim-sider-right .sider-section {margin:8px 0;}
+.karim-sider .sider-logo, .karim-sider-right .sider-logo {text-align:center;margin:10px 0;}
+.karim-sider .sider-logo span, .karim-sider-right .sider-logo span {font-size:1.7em;}
+.karim-sider code, .karim-sider-right code {background:#222f3e;padding:2px 7px;border-radius:4px;font-size:.93em;color:#5eead4;}
+
 /* Main glass box */
 .glass-box-main {
     background: #fff;
-    border-radius: 21px;
-    box-shadow: 0 10px 36px 0 rgba(36, 44, 76, 0.15), 0 2px 7px #38bdf822;
-    padding: 34px 36px 34px 36px;
-    margin: 12px 0 28px 0;
-    border: 1.4px solid #e3e9f8;
-    min-width: 420px; max-width: 680px;
+    border-radius: 18px;
+    box-shadow: 0 7px 27px 0 rgba(36, 44, 76, 0.11), 0 1px 5px #38bdf810;
+    padding: 26px 21px 25px 21px;
+    margin: 10px 0 20px 0;
+    border: 1.2px solid #e3e9f8;
+    min-width: 340px; max-width: 620px;
 }
+
+/* شعار */
 .karim-logo {
     font-family: 'Inter', sans-serif;
-    font-size: 2.2rem; font-weight: 900; letter-spacing: 8px;
-    margin-bottom: 0.16em; text-align: center;
+    font-size: 2rem; font-weight: 900; letter-spacing: 7px;
+    margin-bottom: 0.13em; text-align: center;
     background: linear-gradient(90deg, #2563eb 45%, #38bdf8 70%, #22d3ee 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text; text-fill-color: transparent;
-    user-select: none; text-shadow: 0 1px 13px #38bdf866;
+    user-select: none; text-shadow: 0 1px 10px #38bdf840;
 }
 .subtitle-karim {
-    font-size:1.26rem;
+    font-size:1.08rem;
     text-align:center;
     color:#2563eb;
     font-weight:800;
-    margin-top:5px;
-    letter-spacing:1.7px;
+    margin-top:2px; margin-bottom:6px;
+    letter-spacing:1.2px;
     font-family: 'Inter', sans-serif;
 }
-.title-pro {
-    font-size: 1.19rem;
-    margin-bottom: 1.25rem;
-    color: #1565c0;
-    text-align: center;
-    letter-spacing: 1.4px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-}
-  .karim-glass-info {
+
+/* Info Box */
+.karim-glass-info {
     background: rgba(246, 250, 255, 0.82);
-    border-radius: 15px;
-    border: 1.1px solid #b6c7e2;
-    box-shadow: 0 3px 16px #38bdf820, 0 1px 5px #2563eb10;
-    padding: 16px 18px 13px 18px;
-    margin: 18px 0 14px 0;
+    border-radius: 13px;
+    border: 1px solid #b6c7e2;
+    box-shadow: 0 2px 10px #38bdf812;
+    padding: 11px 15px 10px 15px;
+    margin: 13px 0 8px 0;
     color: #174ca1;
-    font-size: 1.11em;
+    font-size: 1.03em;
     font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    letter-spacing: .04em;
+    font-weight: 600;
+    letter-spacing: .03em;
     text-align: center;
-    backdrop-filter: blur(2.7px);
+    backdrop-filter: blur(2.1px);
 }
-.stAlert-info {
-    color: #174ca1 !important;
-    font-weight: 700 !important;
-    font-size: 1.14em !important;
-}
-.stAlert p {
-    color: #174ca1 !important;
-    font-weight: 700 !important;
-    font-size: 1.14em !important;
-}
-.form-label-karim {
-    font-weight: 800;
-    color: #1565c0;
-    font-size: 1.08em;
-    letter-spacing: .02em;
-    margin-bottom: 0.18em;
-    display: block;
-}
-.stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
+
+/* عناوين المجموعات */
+.stRadio > label, .stTextInput > label, .stTextArea > label, .stSelectbox > label, .stMarkdown h3 {
     color: #2563eb !important;
     font-weight: 800 !important;
-    letter-spacing: .06em;
-    font-size: 1.06em;
+    font-size: 1.05em !important;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.12em !important;
+    margin-top: 0.5em !important;
+    display: block;
 }
-.stRadio span, .stRadio div, .stRadio p, .stInfo {
-    color: #222b45 !important;
-    font-weight: 700 !important;
-    font-size: 1em;
+/* تصغير المسافة بين العنوان وخيارات الراديو */
+.stRadio > div[role="radiogroup"] {margin-top: -0.7em !important; margin-bottom: 0.1em !important;}
+.stRadio {margin-bottom: 0.2em !important;}
+
+/* تصغير حجم الخط وتخفيف الوزن لخانات الراديو والنصوص الفرعية */
+.stRadio > div[role="radiogroup"] label,
+.stRadio > div[role="radiogroup"] span,
+.stRadio > div[role="radiogroup"] div {
+    font-size: 0.91em !important;
+    font-weight: 500 !important;
+    color: #232a3d !important;
 }
+.stRadio > div[role="radiogroup"] * {font-weight: 500 !important; font-size: 0.91em !important;}
+.stRadio [data-baseweb="radio"] {font-weight: 500 !important; color: #232a3d !important;}
+
+/* مدخلات النص */
 input, textarea, .stTextInput>div>input, .stTextArea>div>textarea {
-    border-radius: 10px !important;
+    border-radius: 9px !important;
     background: #f4f8fb !important;
     color: #17213d !important;
-    border: 1.8px solid #bcd0ee;
-    font-size: 1.08em;
+    border: 1.5px solid #bcd0ee;
+    font-size: 1.02em;
     font-weight:600;
     box-shadow: 0 2px 7px #38bdf810;
     transition: border .13s;
 }
 input:focus, textarea:focus {
-    border: 2.2px solid #38bdf8 !important;
+    border: 2px solid #38bdf8 !important;
     background: #fff !important;
     color: #1e293b !important;
 }
+
+/* زرار */
 .stButton>button {
     background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
-    border-radius: 11px !important;
+    border-radius: 9px !important;
     color: #fff !important;
     font-weight: bold;
     font-family: 'Inter', sans-serif;
-    font-size: 1.08em; letter-spacing:.1px;
+    font-size: 0.97em; letter-spacing:.1px;
     box-shadow: 0 4px 16px #2563eb22;
     border: none !important;
-    transition: box-shadow .15s, transform .12s, background .14s;
+    transition: box-shadow .13s, transform .11s, background .11s;
 }
 .stButton>button:hover {
     background: linear-gradient(90deg, #38bdf8 0%, #22d3ee 100%);
     color: #fff !important;
-    box-shadow: 0 10px 22px #2563eb28;
-    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 9px 20px #2563eb23;
+    transform: translateY(-1px) scale(1.03);
 }
 .stButton>button:active {
-    transform: scale(.98);
-    box-shadow: 0 2px 4px #2563eb18;
+    transform: scale(.97);
+    box-shadow: 0 1px 3px #2563eb10;
 }
+
+/* لائحة الأرقام */
 .numbers-list-karim {
-    display: flex; flex-direction: column; gap: 3px; font-size: 15.2px;
-    background: #f1f7fd; border-radius: 8px; padding: 7px 11px 7px 13px; margin-bottom: 13px;
-    max-height: 110px; overflow-y: auto; color: #2563eb;
-    border: 1.2px solid #e5eaf7;
-    box-shadow: 0 2px 8px #38bdf80f;
+    display: flex; flex-direction: column; gap: 2px; font-size: 14.5px;
+    background: #f1f7fd; border-radius: 8px; padding: 6px 9px 6px 10px; margin-bottom: 11px;
+    max-height: 90px; overflow-y: auto; color: #2563eb;
+    border: 1px solid #e5eaf7;
+    box-shadow: 0 2px 7px #38bdf80f;
     font-family: 'Inter', sans-serif;
 }
 .numbers-list-karim .active {
     background: linear-gradient(90deg,#38bdf849 60%,#22d3ee80 100%);
     border-radius: 7px; font-weight: bold; color: #fff;
-    font-size: 1.10em; border-left: 5px solid #2563eb; padding-left: 4px;
-    box-shadow: 0 2px 10px #22d3ee25;
+    font-size: 1em; border-left: 4px solid #2563eb; padding-left: 3px;
+    box-shadow: 0 2px 8px #22d3ee18;
 }
+
+/* الفوتر */
 .footer-karim {
-    margin-top: 2.1rem; font-size: 1.12rem; color: #2563eb;
-    text-align: center; letter-spacing: 1.1px;
+    margin-top: 1.3rem; font-size: 0.98rem; color: #2563eb;
+    text-align: center; letter-spacing: 1px;
     font-family: 'Inter', sans-serif;
-    opacity: .98; font-weight: bold; padding-bottom: 13px;
+    opacity: .98; font-weight: bold; padding-bottom: 10px;
 }
+
+/* موبايل */
 @media (max-width:900px){
-    .glass-box-main{padding:5vw 1vw;min-width:unset;max-width:unset;}
-    .karim-sider,.karim-sider-right{padding:14px 6vw;}
+    .glass-box-main{padding:4vw 1vw;min-width:unset;max-width:unset;}
+    .karim-sider,.karim-sider-right{padding:10px 5vw;}
 }
 </style>
 """, unsafe_allow_html=True)
@@ -373,23 +376,45 @@ with col2:
       <div class="glass-box-main">
           <div class="karim-logo">KARIM</div>
           <div class="subtitle-karim">WhatsApp Broadcast Sender</div>
-          <!-- هنا ضع بقية عناصر الصفحة: الأزرار، الراديو، المدخلات، إلخ -->
-      </div>
       """, unsafe_allow_html=True)
-    
+
+    # --- أضف CSS مخصص لعناوين الراديو ---
+    st.markdown("""
+    <style>
+    .form-label-karim {
+        font-weight: 800;
+        color: #1877f2;
+        font-size: 1.14em;
+        letter-spacing: .03em;
+        margin-bottom: 0.2em;
+        display: block;
+    }
+    .stRadio > div[role="radiogroup"] label,
+    .stRadio > div[role="radiogroup"] span,
+    .stRadio > div[role="radiogroup"] div {
+        font-weight: 500 !important;
+        color: #21293a !important;
+        font-size: 1.09em !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --- عناوين الراديو بخط أزرق عريض ---
     st.markdown('<span class="form-label-karim">Choose mode:</span>', unsafe_allow_html=True)
     mode = st.radio(
-        "",  # بدون عنوان هنا
+        "",
         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
         horizontal=True,
         key="mode"
     )
-    
-    # ---- Simple Mode ----
+
     if mode == "Simple: Numbers Only":
-        lang = st.radio("Language", [
-            "🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"
-        ], horizontal=True, key="lang_radio")
+        st.markdown('<span class="form-label-karim">Language</span>', unsafe_allow_html=True)
+        lang = st.radio(
+            "",
+            ["🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"],
+            horizontal=True, key="lang_radio"
+        )
         lang_code = {
             "🇬🇧 English": "en",
             "🇸🇦 العربية": "ar",
@@ -397,9 +422,18 @@ with col2:
             "🇫🇷 Français": "fr",
             "🇪🇸 Español": "es"
         }[lang]
-        platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio")
+
+        st.markdown('<span class="form-label-karim">Send using</span>', unsafe_allow_html=True)
+        platform = st.radio(
+            "",
+            ["💻 WhatsApp Web", "📱 WhatsApp App"],
+            horizontal=True, key="plat_radio"
+        )
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
-        numbers_raw = st.text_area("Numbers (comma/newline/any format)", placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)")
+        numbers_raw = st.text_area(
+            "Numbers (comma/newline/any format)", 
+            placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)"
+        )
         numbers = extract_numbers(numbers_raw)
         names = [''] * len(numbers)
         countries = [''] * len(numbers)
@@ -410,7 +444,55 @@ with col2:
             st.markdown("#### Filtered Numbers:")
             st.code('\n'.join(numbers), language="text")
             copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
-            st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt", key="dl-main")
+            st.download_button(
+                "⬇️ Download filtered numbers", 
+                "\n".join(numbers), 
+                file_name="clean_numbers.txt", 
+                key="dl-main"
+            )
+
+# with col2:
+#     st.markdown("""
+#       <div class="glass-box-main">
+#           <div class="karim-logo">KARIM</div>
+#           <div class="subtitle-karim">WhatsApp Broadcast Sender</div>
+#           <!-- هنا ضع بقية عناصر الصفحة: الأزرار، الراديو، المدخلات، إلخ -->
+#       </div>
+#       """, unsafe_allow_html=True)
+    
+#     mode = st.radio(
+#         "Choose mode:",
+#         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
+#         horizontal=True,
+#         key="mode"
+#     )
+    
+#     # ---- Simple Mode ----
+#     if mode == "Simple: Numbers Only":
+#         lang = st.radio("Language", [
+#             "🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"
+#         ], horizontal=True, key="lang_radio")
+#         lang_code = {
+#             "🇬🇧 English": "en",
+#             "🇸🇦 العربية": "ar",
+#             "🇹🇷 Türkçe": "tr",
+#             "🇫🇷 Français": "fr",
+#             "🇪🇸 Español": "es"
+#         }[lang]
+#         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio")
+#         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
+#         numbers_raw = st.text_area("Numbers (comma/newline/any format)", placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)")
+#         numbers = extract_numbers(numbers_raw)
+#         names = [''] * len(numbers)
+#         countries = [''] * len(numbers)
+#         msg_template = templates[lang_code]
+#         st.session_state["last_numbers"] = numbers if numbers else []
+
+#         if numbers_raw and numbers:
+#             st.markdown("#### Filtered Numbers:")
+#             st.code('\n'.join(numbers), language="text")
+#             copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
+#             st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt", key="dl-main")
 
     # ---- Smart Mode ----
     else:
