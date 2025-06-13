@@ -695,4 +695,4 @@ with col2:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:#1976d2;">Karim OTHMAN 😍</span> &copy; 2025</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:#1976d2;">Karim OTHMAN</span> &copy; 2025</div>', unsafe_allow_html=True)
