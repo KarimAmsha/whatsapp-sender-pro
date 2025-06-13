@@ -358,27 +358,19 @@ with col1:
       """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
     st.markdown("""
-    <div class="sider-section" style="background:rgba(237,246,255,0.45);border-radius:9px;padding:12px 12px 9px 13px;margin-bottom:12px;">
-        <span class="sider-label" style="color:#1366d6;">Import / Export:</span>
-        <ul style='margin:7px 0 0 13px;padding:0;list-style:none;'>
-            <li style="margin-bottom:5px;">
-                <span style="font-size:1.08em;color:#1182c9;">📤</span>
-                <span style="color:#13345d;font-size:0.97em;">Upload <b>CSV</b>, Excel, or paste numbers.</span>
-            </li>
-            <li>
-                <span style="font-size:1.08em;color:#00b378;">📥</span>
-                <span style="color:#13345d;font-size:0.97em;">Export or copy filtered numbers directly.</span>
-            </li>
-        </ul>
-    </div>
-    <div class="sider-section" style="background:rgba(245,255,246,0.50);border-radius:9px;padding:12px 12px 9px 13px;margin-bottom:13px;">
-        <span class="sider-label" style="color:#108556;">New Features:</span>
-        <div style="color:#1976d2;font-weight:700;font-size:0.99em;line-height:1.5;margin-top:4px;">
-            <span style="font-size:1.09em;">✨</span> One-click <span style="color:#10b981;font-weight:800;">copy</span> enabled!<br>
-            <span style="font-size:1.09em;">💡</span> Fully responsive & modern design.
+        <div class="sider-section">
+            <span class="sider-label">Import / Export:</span><br>
+            <ul style='margin-top:3px;'>
+            <li>Upload <b>CSV</b> or paste numbers.</li>
+            <li>Export filtered numbers directly.</li>
+            </ul>
         </div>
+        <div class="sider-section">
+            <span class="sider-label">Recent Feature:</span>
+            <div style="color:#0ea5e9;font-weight:700;">One-click copy!</div>
+        </div>
+        <div class="sider-logo"><span>🛠️</span></div>
     </div>
-    <div class="sider-logo"><span>🛠️</span></div>
     """, unsafe_allow_html=True)
 
 with col3:
