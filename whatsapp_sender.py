@@ -226,6 +226,14 @@ st.markdown("""
     font-weight: 700 !important;
     font-size: 1.14em !important;
 }
+.form-label-karim {
+    font-weight: 800;
+    color: #1565c0;
+    font-size: 1.08em;
+    letter-spacing: .02em;
+    margin-bottom: 0.18em;
+    display: block;
+}
 .stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
     color: #2563eb !important;
     font-weight: 800 !important;
@@ -369,12 +377,20 @@ with col2:
       </div>
       """, unsafe_allow_html=True)
     
+    st.markdown('<span class="form-label-karim">Choose mode:</span>', unsafe_allow_html=True)
     mode = st.radio(
-        "Choose mode:",
+        "",  # بدون عنوان هنا
         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
         horizontal=True,
         key="mode"
     )
+
+    # mode = st.radio(
+    #     "Choose mode:",
+    #     ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
+    #     horizontal=True,
+    #     key="mode"
+    # )
     
     # ---- Simple Mode ----
     if mode == "Simple: Numbers Only":
