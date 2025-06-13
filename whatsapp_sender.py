@@ -437,9 +437,9 @@ with col2:
                   if df is not None:
                       columns = list(df.columns)
                       # يطلب من المستخدم يختار الأعمدة بنفسه
-                      number_col = st.selectbox("اختر العمود الذي يحتوي أرقام الواتساب:", columns)
-                      name_col = st.selectbox("اختر عمود الاسم (اختياري):", columns, index=1 if len(columns) > 1 else 0)
-                      country_col = st.selectbox("اختر عمود الدولة (اختياري):", columns, index=2 if len(columns) > 2 else 0)
+                      number_col = st.selectbox("Select the column containing WhatsApp numbers:", columns)
+                      name_col = st.selectbox("Select the name column (optional):", columns, index=1 if len(columns) > 1 else 0)
+                      country_col = st.selectbox("Select the country column (optional):", columns, index=2 if len(columns) > 2 else 0)
 
                       # فلترة الداتا فريم حسب العمود المختار
                       df = df.dropna(subset=[number_col])
