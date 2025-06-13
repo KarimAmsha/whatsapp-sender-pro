@@ -498,7 +498,6 @@ with col2:
                 "Looking forward to your reply, {name}!\n\n"
                 "Best regards,\n"
                 "Sales Department\n"
-                "WhatsApp: {number}"
             ),
             height=220,
             key="smart_template"
