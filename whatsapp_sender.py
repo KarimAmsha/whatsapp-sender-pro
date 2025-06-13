@@ -347,11 +347,11 @@ with col1:
             padding: 14px 18px;
             margin: 13px 0 14px 0;
             color: #174ca1;
-            font-size: 1.10em;
+            font-size: 0.96em;
             font-family: 'Inter', sans-serif;
-            font-weight: 700;
+            font-weight: 400;
             letter-spacing: .02em;
-            text-align: center;
+            text-align: left;
             ">
             ℹ️ Clean numbers will appear here after filtering.
         </div>
