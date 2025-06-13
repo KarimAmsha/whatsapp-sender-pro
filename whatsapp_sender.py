@@ -384,13 +384,6 @@ with col2:
         horizontal=True,
         key="mode"
     )
-
-    mode = st.radio(
-        "Choose mode:",
-        ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
-        horizontal=True,
-        key="mode"
-    )
     
     # ---- Simple Mode ----
     if mode == "Simple: Numbers Only":
