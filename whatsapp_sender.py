@@ -338,10 +338,24 @@ with col1:
         )
         copy_to_clipboard_code("\n".join(st.session_state["last_numbers"]), "Copy All Numbers")
     else:
-      st.info(
-        'Clean numbers will appear here after filtering.',
-          icon="ℹ️"
-      )
+      st.markdown("""
+        <div style="
+            background: rgba(246,250,255,0.82);
+            border-radius: 13px;
+            border: 1.1px solid #b6c7e2;
+            box-shadow: 0 3px 13px #38bdf820;
+            padding: 14px 18px;
+            margin: 13px 0 14px 0;
+            color: #174ca1;
+            font-size: 1.10em;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            letter-spacing: .02em;
+            text-align: center;
+            ">
+            ℹ️ Clean numbers will appear here after filtering.
+        </div>
+      """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
     st.markdown("""
         <div class="sider-section">
