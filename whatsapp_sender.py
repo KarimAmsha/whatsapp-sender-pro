@@ -474,11 +474,18 @@ with col2:
             df = df[df["number"].str.len() >= 8]
             df = df.astype(str)
         if df is not None and not df.empty:
-            numbers = df[number_col].tolist()
-            names = df[name_col].tolist() if name_col else ['']*len(df)
-            countries = df[country_col].tolist() if country_col else ['']*len(df)
+          # إذا كان المستخدم رفع ملف: استخدم الأعمدة المختارة
+          if data_opt == "Upload CSV file" and 'number_col' in locals():
+              numbers = df[number_col].tolist()
+              names = df[name_col].tolist() if name_col else ['']*len(df)
+              countries = df[country_col].tolist() if country_col else ['']*len(df)
+          else:
+              # إذا كان الإدخال يدوي (columns ثابتة: number, name, country)
+              numbers = df['number'].tolist() if 'number' in df.columns else []
+              names = df['name'].tolist() if 'name' in df.columns else ['']*len(df)
+              countries = df['country'].tolist() if 'country' in df.columns else ['']*len(df)
         else:
-            numbers, names, countries = [], [], []
+          numbers, names, countries = [], [], []
         msg_template = st.text_area(
             "Write message template (use {name}, {country}, {number}):",
             value=(
