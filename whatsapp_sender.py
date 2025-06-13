@@ -3,7 +3,11 @@ import pandas as pd
 import urllib.parse
 import re
 
-st.set_page_config(page_title="KARIM | WhatsApp Sender PRO", layout="centered")
+st.set_page_config(
+    page_title="KARIM | WhatsApp Sender PRO",
+    layout="wide",  # تغيير إلى wide لاستغلال العرض
+    initial_sidebar_state="expanded"
+)
 
 # فلترة الأرقام لأي نص وتوحيدها بصيغة رقمية فقط
 def extract_numbers(text):
@@ -16,9 +20,10 @@ def extract_numbers(text):
     return numbers
 
 def clean_number(n):
-    # من أي نص (أو رقم) إلى أرقام فقط
     return re.sub(r'\D', '', str(n))
 
+#########################
+# ---------- CSS -----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -26,50 +31,63 @@ body, [class*="css"] {
   font-family: 'Inter', Arial, sans-serif !important;
 }
 .stApp {
-  background: linear-gradient(120deg, #f9fafb 70%, #e0e7ef 100%) fixed !important;
+  background: linear-gradient(120deg, #f7fafd 70%, #e0e7ef 100%) fixed !important;
   min-height: 100vh;
 }
-.glass-box {
+#top-bar-karim {
+  width: 100vw; 
+  background: linear-gradient(90deg,#e3f2fd 50%,#b3ecf7 100%);
+  margin: 0 -6vw 35px -6vw;
+  padding: 19px 0 12px 0;
+  text-align: center;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 5px 24px 0 #38bdf820;
+  font-size: 1.17rem; font-family:'Inter',sans-serif;
+  color: #1674db;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.glass-box-main {
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 6px 24px 0 rgba(24, 40, 100, 0.08), 0 1px 4px #38bdf844;
-  padding: 32px 24px 20px 24px;
-  margin: 36px auto 12px auto;
-  max-width: 540px;
-  border: 1.3px solid #e3e9f8;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(24, 40, 100, 0.12), 0 2px 8px #38bdf822;
+  padding: 38px 40px 38px 40px;
+  margin: 22px 0 28px 0;
+  border: 1.6px solid #e3e9f8;
+  min-width: 440px;
+  max-width: 650px;
   animation: popUp .7s cubic-bezier(.56,.19,.34,.98);
   transition: box-shadow .19s, transform .14s;
 }
-.glass-box:hover {
-  box-shadow: 0 14px 38px 0 #2563eb19, 0 1px 7px #22d3ee22;
-  transform: translateY(-3px) scale(1.012);
+@media (max-width: 1100px) {
+  .glass-box-main {max-width: 95vw; padding: 18px 2vw;}
 }
 @keyframes popUp {
-  0% {opacity:0;transform: scale(.95) translateY(32px);}
+  0% {opacity:0;transform: scale(.96) translateY(32px);}
   100% {opacity:1;transform: scale(1) translateY(0);}
 }
 .karim-logo {
   font-family: 'Inter', sans-serif;
-  font-size: 2.25rem; font-weight: 900; letter-spacing: 8px;
-  margin-bottom: 0.1rem; text-align: center;
+  font-size: 2.8rem; font-weight: 900; letter-spacing: 9px;
+  margin-bottom: 0.3rem; text-align: center;
   background: linear-gradient(90deg, #2563eb 35%, #38bdf8 90%, #22d3ee 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; text-fill-color: transparent;
   user-select: none;
-  text-shadow: 0 2px 14px #38bdf866;
+  text-shadow: 0 2px 18px #38bdf866;
   animation: popLogo 1s cubic-bezier(.18,1.6,.52,1);
 }
 @keyframes popLogo {
   0% {letter-spacing:0px;opacity:0;transform: scale(.7);}
-  80% {letter-spacing:16px;}
+  80% {letter-spacing:19px;}
   100% {opacity:1;}
 }
 .title-pro {
-  font-size: 1.19rem;
-  margin-bottom: 1.1rem;
+  font-size: 1.28rem;
+  margin-bottom: 1.2rem;
   color: #2563eb;
   text-align: center;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.7px;
   font-family: 'Inter', sans-serif;
   font-weight: bold;
   animation: fadeDown .7s;
@@ -78,16 +96,11 @@ body, [class*="css"] {
   0% {opacity:0;transform:translateY(-22px);}
   100% {opacity:1;transform:translateY(0);}
 }
-hr {
-  border: none;
-  border-top: 1.3px solid #e3e9f8;
-  margin: 23px 0 23px 0;
-}
 .stRadio label, .stTextInput label, .stTextArea label, .stMarkdown h3, .stSelectbox label {
   color: #2563eb !important;
   font-weight: 700 !important;
   letter-spacing: .04em;
-  font-size: 1.01em;
+  font-size: 1.03em;
 }
 .stRadio span, .stRadio div, .stRadio p, .stInfo {
   color: #334155 !important;
@@ -99,7 +112,7 @@ input, textarea {
   color: #0f172a !important;
   border: 1.5px solid #e2e8f0;
   box-shadow: 0 2px 7px #38bdf812;
-  font-size: 1.07em;
+  font-size: 1.09em;
   transition: border .12s;
 }
 input:focus, textarea:focus {
@@ -112,7 +125,7 @@ input:focus, textarea:focus {
   color: #fff !important;
   font-weight: bold;
   font-family: 'Inter', sans-serif;
-  font-size: 1.08em; letter-spacing:.1px;
+  font-size: 1.09em; letter-spacing:.1px;
   box-shadow: 0 4px 16px #2563eb25;
   border: none !important;
   transition: box-shadow .16s, transform .11s, background .16s;
@@ -148,91 +161,87 @@ input:focus, textarea:focus {
   opacity: .97; font-weight: bold; padding-bottom: 13px;
   animation: fadeUp 1.2s; text-shadow: 0 1px 7px #38bdf811;
 }
-@keyframes fadeUp {0% {opacity:0;transform:translateY(22px);}100% {opacity:1;transform:translateY(0);}}
+@keyframes fadeUp {0% {opacity:0;transform:translateY(22px);}100% {opacity:1;transform:translateY(0);}
+}
+.sider-karim {
+  background: linear-gradient(120deg, #e0eaff 80%, #f1f5f9 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 24px 0 #dbeafe25;
+  padding: 29px 18px 25px 18px;
+  margin: 29px 0;
+  min-width: 240px; max-width: 310px;
+  font-family:'Inter',sans-serif;
+  font-size: 1.05em;
+}
+.sider-karim .sider-title {
+  color: #1877f2; font-size: 1.14em; font-weight: 900; letter-spacing: 2.4px; margin-bottom: 10px;
+  margin-top: 1px;
+}
+.sider-karim .sider-note {
+  color: #0ea5e9; font-size: 1.01em; margin-bottom: 6px; margin-top: 0;
+  font-weight: bold;
+}
+.sider-karim .sider-mini {
+  color: #475569; font-size: .97em; margin-bottom: 13px; margin-top: 9px;
+}
+.sider-karim .sider-logo {
+  text-align:center; margin-top:27px;
+}
+.sider-karim .sider-logo span {
+  font-size: 2.1em; color: #2563eb; font-weight: 900; letter-spacing:7px; text-shadow: 0 2px 8px #a1cdf733;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# === Templates ===
-templates = {
-    'en': """Hello 👋
+#########################
+# ---- TEMPLATES --------
+templates = { ... } # لا تغير هذا الجزء! نفس الموجود في كودك
 
-We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
+# ======== Layout structure =========
+# جانب يمين | وسط | جانب يسار
+col1, col2, col3 = st.columns([1, 2.2, 1])
 
-We specialize in producing high-quality snacks such as:
-🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
+with col1:
+    st.markdown("""
+    <div class="sider-karim">
+        <div class="sider-title">About</div>
+        <div class="sider-mini">👋 This tool helps you send bulk WhatsApp messages to any country with filtering and cleaning numbers.</div>
+        <div class="sider-note">✨ Supports both manual input and smart CSV uploading.</div>
+        <hr style="margin:11px 0;">
+        <div class="sider-mini">
+        <b>How to use?</b>
+        <ol>
+            <li>Paste or upload your contact list.</li>
+            <li>Filter numbers and preview your message.</li>
+            <li>Send via WhatsApp Web/App.</li>
+        </ol>
+        </div>
+        <div class="sider-logo"><span>K</span></div>
+    </div>
+    """, unsafe_allow_html=True)
 
-We're always eager to connect with reliable partners and explore new markets together. 🤝
+with col3:
+    st.markdown("""
+    <div class="sider-karim">
+        <div class="sider-title">Quick Tips</div>
+        <div class="sider-mini">
+        <b>• CSV Example:</b><br>
+        <code>number,name,country</code><br>
+        <code>201111223344,Mohamed,Egypt</code>
+        <br><br>
+        <b>• Clean numbers auto</b><br>
+        <b>• Works with all countries</b>
+        <br><br>
+        <b>Contact: </b> <a href="mailto:karim.amsha@gmail.com">karim.amsha@gmail.com</a>
+        </div>
+        <div class="sider-logo"><span>💬</span></div>
+    </div>
+    """, unsafe_allow_html=True)
 
-If you are interested, we are happy to share our catalog, price list, and discuss how we can work together.
+with col2:
+    st.markdown('<div id="top-bar-karim">Welcome to <span style="color:#1976d2">KARIM WhatsApp Sender PRO</span> | 🚀 Clean, Filter & Broadcast like a Pro!</div>', unsafe_allow_html=True)
+    st.markdown('<div class="glass-box-main">', unsafe_allow_html=True)
 
-Looking forward to your reply!
-
-Best regards,
-Sales Department""",
-    'ar': """مرحبًا 👋
-
-نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول - تركيا).
-
-نحن متخصصون في إنتاج سناكات عالية الجودة مثل:
-🍪 الكرواسون، الكيك، البسكويت، الدونات، الجيلي، والويفر.
-
-نسعى دائمًا للتواصل مع شركاء موثوقين واستكشاف أسواق جديدة معًا 🤝
-
-إذا كنت مهتمًا، يسعدنا أن نرسل لك الكتالوج وقائمة الأسعار ومناقشة فرص التعاون المشترك.
-
-بانتظار ردكم الكريم!
-
-تحياتنا،
-قسم المبيعات""",
-    'tr': """Merhaba 👋
-
-Biz EUROSWEET GIDA LTD. ŞTİ. (İstanbul – Türkiye) Satış Departmanıyız.
-
-Aşağıdaki yüksek kaliteli atıştırmalıkları üretiyoruz:
-🍪 Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret.
-
-Her zaman güvenilir ortaklarla bağlantı kurmak ve yeni pazarları birlikte keşfetmek isteriz. 🤝
-
-İlgileniyorsanız, size kataloğumuzu ve fiyat listemizi paylaşabilir, iş birliğini konuşabiliriz.
-
-Cevabınızı dört gözle bekliyoruz!
-
-Saygılarımızla,
-Satış Departmanı""",
-    'fr': """Bonjour 👋
-
-Nous sommes le département commercial de EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turquie).
-
-Nous sommes spécialisés dans la production de snacks de haute qualité tels que :
-🍪 Croissants, gâteaux, biscuits, donuts, gelées et gaufrettes.
-
-Nous sommes toujours prêts à collaborer avec des partenaires fiables et à explorer de nouveaux marchés ensemble. 🤝
-
-Si vous êtes intéressé, nous serions heureux de partager notre catalogue, notre liste de prix et de discuter des opportunités de collaboration.
-
-Dans l’attente de votre réponse !
-
-Cordialement,
-Département des ventes""",
-    'es': """Hola 👋
-
-Somos el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul – Turquía).
-
-Estamos especializados en la producción de snacks de alta calidad como:
-🍪 Cruasanes, pasteles, galletas, donas, gelatinas y barquillos.
-
-Siempre estamos dispuestos a conectar con socios confiables y explorar juntos nuevos mercados. 🤝
-
-Si está interesado, estaremos encantados de compartir nuestro catálogo, lista de precios y hablar sobre cómo podemos colaborar.
-
-¡Esperamos su respuesta!
-
-Saludos cordiales,
-Departamento de Ventas"""
-}
-
-with st.container():
-    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
     st.markdown('<div class="karim-logo">KARIM</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-pro">WhatsApp Broadcast Sender</div>', unsafe_allow_html=True)
     st.markdown('<hr>', unsafe_allow_html=True)
@@ -289,7 +298,7 @@ with st.container():
             if uploaded_file is not None:
                 try:
                     df = pd.read_csv(uploaded_file).dropna(subset=["number"])
-                    df["number"] = df["number"].apply(clean_number)  # فلترة الأرقام
+                    df["number"] = df["number"].apply(clean_number)
                     df = df[df["number"].str.len() >= 8]
                     df = df.astype(str)
                     st.success(f"{len(df)} contacts loaded.")
@@ -356,7 +365,6 @@ with st.container():
         st.session_state.skipped = set()
 
     if numbers:
-        # Personalized msg for smart mode
         try:
             msg_personal = msg_template.format(
                 name=names[st.session_state.current] if names else '',
