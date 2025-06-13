@@ -294,6 +294,14 @@ input:focus, textarea:focus {
     font-size: 1em; border-left: 4px solid #2563eb; padding-left: 3px;
     box-shadow: 0 2px 8px #22d3ee18;
 }
+/* اجعل نص st.info أغمق وواضح */
+.stAlert-info, .stAlert-info p, .stAlert-info span {
+    color: #174ca1 !important;  /* أزرق داكن */
+    font-weight: 700 !important;
+    font-size: 1.09em !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
 
 /* الفوتر */
 .footer-karim {
