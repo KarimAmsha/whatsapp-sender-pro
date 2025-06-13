@@ -3,9 +3,10 @@ import pandas as pd
 import urllib.parse
 import re
 
+# إعداد الصفحة ليصبح العرض واسع
 st.set_page_config(
     page_title="KARIM | WhatsApp Sender PRO",
-    layout="wide",  # تغيير إلى wide لاستغلال العرض
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
@@ -22,8 +23,7 @@ def extract_numbers(text):
 def clean_number(n):
     return re.sub(r'\D', '', str(n))
 
-#########################
-# ---------- CSS -----------
+# ---------- CSS ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -35,7 +35,7 @@ body, [class*="css"] {
   min-height: 100vh;
 }
 #top-bar-karim {
-  width: 100vw; 
+  width: 100vw;
   background: linear-gradient(90deg,#e3f2fd 50%,#b3ecf7 100%);
   margin: 0 -6vw 35px -6vw;
   padding: 19px 0 12px 0;
@@ -193,12 +193,86 @@ input:focus, textarea:focus {
 </style>
 """, unsafe_allow_html=True)
 
-#########################
-# ---- TEMPLATES --------
-templates = { ... } # لا تغير هذا الجزء! نفس الموجود في كودك
+# ==== TEMPLATES (لا تغيرها) ====
+templates = {
+    'en': """Hello 👋
 
-# ======== Layout structure =========
-# جانب يمين | وسط | جانب يسار
+We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
+
+We specialize in producing high-quality snacks such as:
+🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
+
+We're always eager to connect with reliable partners and explore new markets together. 🤝
+
+If you are interested, we are happy to share our catalog, price list, and discuss how we can work together.
+
+Looking forward to your reply!
+
+Best regards,
+Sales Department""",
+    'ar': """مرحبًا 👋
+
+نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول - تركيا).
+
+نحن متخصصون في إنتاج سناكات عالية الجودة مثل:
+🍪 الكرواسون، الكيك، البسكويت، الدونات، الجيلي، والويفر.
+
+نسعى دائمًا للتواصل مع شركاء موثوقين واستكشاف أسواق جديدة معًا 🤝
+
+إذا كنت مهتمًا، يسعدنا أن نرسل لك الكتالوج وقائمة الأسعار ومناقشة فرص التعاون المشترك.
+
+بانتظار ردكم الكريم!
+
+تحياتنا،
+قسم المبيعات""",
+    'tr': """Merhaba 👋
+
+Biz EUROSWEET GIDA LTD. ŞTİ. (İstanbul – Türkiye) Satış Departmanıyız.
+
+Aşağıdaki yüksek kaliteli atıştırmalıkları üretiyoruz:
+🍪 Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret.
+
+Her zaman güvenilir ortaklarla bağlantı kurmak ve yeni pazarları birlikte keşfetmek isteriz. 🤝
+
+İlgileniyorsanız, size kataloğumuzu ve fiyat listemizi paylaşabilir, iş birliğini konuşabiliriz.
+
+Cevabınızı dört gözle bekliyoruz!
+
+Saygılarımızla,
+Satış Departmanı""",
+    'fr': """Bonjour 👋
+
+Nous sommes le département commercial de EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turquie).
+
+Nous sommes spécialisés dans la production de snacks de haute qualité tels que :
+🍪 Croissants, gâteaux, biscuits, donuts, gelées et gaufrettes.
+
+Nous sommes toujours prêts à collaborer avec des partenaires fiables et à explorer de nouveaux marchés ensemble. 🤝
+
+Si vous êtes intéressé, nous serions heureux de partager notre catalogue, notre liste de prix et de discuter des opportunités de collaboration.
+
+Dans l’attente de votre réponse !
+
+Cordialement,
+Département des ventes""",
+    'es': """Hola 👋
+
+Somos el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul – Turquía).
+
+Estamos especializados en la producción de snacks de alta calidad como:
+🍪 Cruasanes, pasteles, galletas, donas, gelatinas y barquillos.
+
+Siempre estamos dispuestos a conectar con socios confiables y explorar juntos nuevos mercados. 🤝
+
+Si está interesado, estaremos encantados de compartir nuestro catálogo, lista de precios y hablar sobre cómo podemos colaborar.
+
+¡Esperamos su respuesta!
+
+Saludos cordiales,
+Departamento de Ventas"""
+}
+
+# ====== تقسيم الصفحة Dashboard ======
 col1, col2, col3 = st.columns([1, 2.2, 1])
 
 with col1:
