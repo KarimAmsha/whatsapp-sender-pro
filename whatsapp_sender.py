@@ -1,16 +1,15 @@
 
 import streamlit as st
 import pandas as pd
-import re
 import urllib.parse
-from io import StringIO
+import re
 from datetime import datetime
 
 # =============================
 # APP CONFIG
 # =============================
 st.set_page_config(
-    page_title="KARIM | WhatsApp Sender PRO+",
+    page_title="KARIM | WhatsApp Sender V2 (Full Features)",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -18,11 +17,9 @@ st.set_page_config(
 # =============================
 # UTILITIES
 # =============================
-def extract_numbers(text: str):
-    """Extract candidate phone numbers from any messy text (commas/newlines/words)."""
+def extract_numbers(text):
     if not text:
         return []
-    # Normalize separators to new lines, then strip non-digits per line
     lines = text.replace(",", "\n").splitlines()
     numbers = []
     for line in lines:
@@ -31,25 +28,15 @@ def extract_numbers(text: str):
             numbers.append(digits)
     return numbers
 
-def clean_number(n: str) -> str:
-    """Keep digits only. Don't enforce leading + here (WhatsApp accepts countrycode + number without +)."""
+def clean_number(n):
     return re.sub(r"\D", "", str(n or ""))
 
 def normalize_batch(numbers, default_cc=""):
-    """
-    Normalize a list of numbers:
-    - Keep digits only
-    - Prepend default country code (without +) if number looks local (starts with 0 or length < 11)
-    - Drop obviously invalid (len < 8)
-    - Deduplicate (preserving order)
-    """
-    seen = set()
-    out = []
-    for raw in numbers:
+    seen, out = set(), []
+    for raw in numbers or []:
         d = clean_number(raw)
-        if not d or len(d) < 8:
+        if len(d) < 8:
             continue
-        # Heuristics: if startswith 0 or short, add default CC (if provided and not already starting with it)
         if default_cc:
             if d.startswith("0"):
                 d = default_cc + d.lstrip("0")
@@ -60,30 +47,13 @@ def normalize_batch(numbers, default_cc=""):
             out.append(d)
     return out
 
-def build_whatsapp_url(number: str, message: str, platform: str = "web"):
-    msg_encoded = urllib.parse.quote(message.strip())
-    if platform == "web":
-        return f"https://web.whatsapp.com/send?phone={number}&text={msg_encoded}"
-    return f"https://wa.me/{number}?text={msg_encoded}"
-
-def validate_placeholders(template: str, allowed=None):
-    """
-    Return (ok, missing, extra_placeholders_set).
-    ok=False if template has placeholders not in allowed.
-    """
-    allowed = allowed or {"name", "country", "number"}
-    vars_found = set(re.findall(r"\{(\w+)\}", template))
-    extra = vars_found - allowed
-    missing = allowed - vars_found if "{name}" in template or "{country}" in template or "{number}" in template else set()
-    return (len(extra) == 0, missing, extra)
-
 def copy_to_clipboard_code(content, label="Copy"):
-    btn_id = "copybtn" + str(abs(hash(content)) % (10**8))
+    btn_id = "copybtn" + str(abs(hash(content)) % (10**9))
     st.markdown(f"""
     <button id="{btn_id}" style="
-        background:linear-gradient(90deg,#7c3aed,#2563eb);
-        border:none;border-radius:8px;padding:8px 18px;
-        color:#fff;font-size:0.95em;font-weight:800;
+        background:linear-gradient(90deg,#111827,#1f2937);
+        border:none;border-radius:9px;padding:9px 20px;
+        color:#fff;font-size:0.98em;font-weight:900;
         margin:8px 0;cursor:pointer;">{label}</button>
     <script>
     const btn = document.getElementById('{btn_id}');
@@ -97,348 +67,371 @@ def copy_to_clipboard_code(content, label="Copy"):
     </script>
     """, unsafe_allow_html=True)
 
+def build_whatsapp_url(number: str, message: str, platform: str = "web"):
+    msg_encoded = urllib.parse.quote(message.strip())
+    if platform == "web":
+        return f"https://web.whatsapp.com/send?phone={number}&text={msg_encoded}"
+    return f"https://wa.me/{number}?text={msg_encoded}"
+
 # =============================
-# SESSION STATE
+# TEMPLATES
+# =============================
+templates = {
+    'en': """Hello 👋
+
+We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
+
+We specialize in producing high‑quality snacks such as:
+🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
+
+We're always eager to connect with reliable partners and explore new markets together. 🤝
+
+If you are interested, we are happy to share our catalogue and price list, and discuss how we can work together.
+
+Looking forward to your reply!
+
+Best regards,
+Sales Department""",
+    'ar': """مرحبًا 👋
+
+نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول – تركيا).
+
+نحن متخصصون في إنتاج سناكات عالية الجودة مثل:
+🍪 الكرواسون، الكيك، البسكويت، الدونات، الجيلي، والويفر.
+
+نسعى دائمًا للتواصل مع شركاء موثوقين واستكشاف أسواق جديدة معًا 🤝
+
+إذا كنت مهتمًا، يسعدنا أن نرسل لك الكتالوج وقائمة الأسعار ومناقشة فرص التعاون.
+
+بانتظار ردكم الكريم!
+
+تحياتنا،
+قسم المبيعات""",
+    'tr': """Merhaba 👋
+
+Biz EUROSWEET GIDA LTD. ŞTİ. (İstanbul – Türkiye) Satış Departmanıyız.
+
+Şu yüksek kaliteli atıştırmalıkları üretiyoruz:
+🍪 Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret.
+
+Her zaman güvenilir ortaklarla bağ kurmak ve yeni pazarları birlikte keşfetmek isteriz. 🤝
+
+İlgileniyorsanız, kataloğumuzu ve fiyat listemizi paylaşabilir, iş birliğini konuşabiliriz.
+
+Cevabınızı bekliyoruz!
+
+Saygılarımızla,
+Satış Departmanı""",
+    'fr': """Bonjour 👋
+
+Nous sommes le département commercial de EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turquie).
+
+Nous produisons des snacks de haute qualité, notamment :
+🍪 Croissants, gâteaux, biscuits, donuts, gelées et gaufrettes.
+
+Nous souhaitons collaborer avec des partenaires fiables et explorer ensemble de nouveaux marchés. 🤝
+
+Si vous êtes intéressé, nous serions ravis de partager notre catalogue, notre liste de prix et d'échanger sur une éventuelle coopération.
+
+Dans l’attente de votre retour !
+
+Cordialement,
+Département des ventes""",
+    'es': """Hola 👋
+
+Somos el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul – Turquía).
+
+Producimos snacks de alta calidad como:
+🍪 Cruasanes, pasteles, galletas, donuts, gelatinas y barquillos.
+
+Siempre buscamos conectar con socios confiables y explorar nuevos mercados juntos. 🤝
+
+Si le interesa, podemos compartir nuestro catálogo y lista de precios, y conversar sobre cómo colaborar.
+
+¡Esperamos su respuesta!
+
+Saludos cordiales,
+Departamento de Ventas"""
+}
+
+# =============================
+# SESSION
 # =============================
 ss = st.session_state
 ss.setdefault("numbers", [])
 ss.setdefault("names", [])
 ss.setdefault("countries", [])
-ss.setdefault("df", pd.DataFrame())
 ss.setdefault("current", 0)
 ss.setdefault("skipped", set())
-ss.setdefault("templates", {
-    "en": """Hello {name} 👋
-
-We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
-
-We specialize in producing high-quality snacks such as:
-🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
-
-We’re always eager to connect with reliable partners in {country} and explore new markets together. 🤝
-
-If you are interested, we’d be happy to share our catalogue and price list, and discuss how we can collaborate.
-
-Looking forward to your reply, {name}!
-
-Best regards,
-Sales Department""",
-    "ar": """مرحبًا {name} 👋
-
-نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول - تركيا).
-
-نُنتج سناكات عالية الجودة مثل:
-🍪 الكرواسون، الكيك، البسكويت، الدونات، الجيلي، والويفر.
-
-نسعد دائمًا بالتواصل مع شركاء موثوقين في {country} واستكشاف أسواق جديدة معًا 🤝
-
-إن كنتم مهتمين، يسعدنا مشاركة الكتالوج وقائمة الأسعار ومناقشة سُبل التعاون.
-
-بانتظار ردكم الكريم {name}.
-
-تحياتنا،
-قسم المبيعات"""
-})
+ss.setdefault("last_numbers", [])
 
 # =============================
-# THEME / CSS
+# CSS – Strong bold typography + dark ink
 # =============================
 st.markdown("""
 <style>
-:root { --pri:#4f46e5; --sec:#8b5cf6; --sky:#06b6d4; --ink:#0f172a; }
-.stApp {background: radial-gradient(1200px 600px at 10% 0%, #eef2ff 0%, #f7f7ff 20%, #ffffff 60%) fixed !important;}
-.block-container {padding-top:18px; padding-bottom:14px;}
-/* Glass panels */
-.card {
-    background:#fff; border:1px solid #e7e8ff; border-radius:18px;
-    box-shadow: 0 8px 28px rgba(53, 35, 160, 0.10);
-    padding:20px 18px; margin-bottom:14px;
+:root { --ink:#0b1220; --blue:#0ea5e9; --indigo:#4f46e5; --cyan:#0891b2; --bg1:#f8fbff; --bg2:#eef2ff; }
+.stApp { background: radial-gradient(1200px 600px at 5% -10%, var(--bg2) 0%, #ffffff 40%) fixed; }
+.block-container { padding-top:16px; }
+.k-logo { font-weight: 1000; font-size: 2.3rem; letter-spacing: 8px; text-align:center;
+  background:linear-gradient(90deg,#1f2937, #0ea5e9 70%, #22d3ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom:4px; }
+.k-sub { text-align:center; color:#0b1220; font-weight: 900; letter-spacing:1.4px; font-size:1.12rem; margin-bottom:12px; }
+.panel {
+  background:#fff; border:1.4px solid #e6e9f7; border-radius:18px;
+  box-shadow:0 10px 26px rgba(15,23,42,0.08); padding:20px 18px; margin: 10px 0 14px;
 }
-.h1 {
-    font-weight:900; font-size:2.1rem; letter-spacing:2px; text-align:center;
-    background:linear-gradient(90deg,#4f46e5,#8b5cf6,#06b6d4);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    margin-bottom:6px;
+h3, h4, label, .stMarkdown p, .stTextInput label, .stSelectbox label, .stRadio label, .stTextArea label {
+  color: var(--ink) !important; font-weight: 900 !important; letter-spacing:.2px;
 }
-.sub {text-align:center; color:#4f46e5; font-weight:800; letter-spacing:.6px; margin-bottom:14px;}
-/* Inputs */
-input, textarea {
-    border-radius:10px !important; background:#f8fafc !important; color:#0f172a !important;
-    border:1.4px solid #dce1fb !important; font-weight:600;
-}
-/* Buttons */
 .stButton>button {
-    background: linear-gradient(90deg, #4f46e5, #06b6d4);
-    border-radius: 10px !important; color: #fff !important; font-weight: 800;
-    border: none !important; box-shadow: 0 10px 22px rgba(79,70,229,.22); letter-spacing:.2px;
+  background:linear-gradient(90deg,#111827,#1f2937);
+  border-radius:10px !important; color:#fff !important; font-weight:900;
+  border:none !important; box-shadow:0 8px 18px rgba(2,6,23,.24);
 }
-.stButton>button:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(79,70,229,.25); }
+.stButton>button:hover { transform: translateY(-1px); }
 .stButton>button:active { transform: scale(.98); }
-.badge {
-    display:inline-block; padding:6px 10px; border-radius:999px;
-    background:linear-gradient(90deg,#e0e7ff,#e0f2fe);
-    color:#1e293b; font-weight:800; border:1px solid #dbeafe; margin-right:6px;
+.k-badge {
+  display:inline-block; font-weight:900; color:#0b1220; background:linear-gradient(90deg,#e2e8f0,#e0f2fe);
+  padding:6px 12px; border-radius:999px; border:1px solid #e5e7eb; margin-right:6px;
 }
-.kbar { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:6px 0 12px; }
-.kbar .badge { cursor:default; }
-.small { font-size: .88em; color:#334155; }
-.table-box {
-    background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:12px;
-    box-shadow: inset 0 1px 0 #fff;
+.k-list { display:flex; flex-direction:column; gap:2px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:10px; padding:8px; max-height:120px; overflow:auto; }
+.k-list .active { background:linear-gradient(90deg,#0ea5e9,#22d3ee); color:#fff; font-weight:1000; border-radius:7px; padding-left:6px; }
+.tag {
+  display:inline-block;background:linear-gradient(90deg,#ecfeff,#eef2ff); border:1px solid #e2e8f0; padding:6px 10px; border-radius:10px; font-weight:900; color:#0f172a;
 }
-.progress-circle {
-    width: 64px; height:64px; border-radius:50%;
-    background: conic-gradient(#06b6d4 var(--p,0%), #e2e8f0 var(--p,0%) 100%);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 4px 16px rgba(2,132,199,0.18);
-    margin: 0 auto 8px;
-}
-.progress-circle span { font-weight:900; color:#0ea5e9; }
-.footer { text-align:center; color:#334155; font-weight:700; margin-top:12px; }
+.footer { text-align:center; color:#0f172a; font-weight:900; margin-top:12px; }
+.info-card { background:linear-gradient(180deg,#f0f9ff,#ecfeff); border:1px solid #bae6fd; color:#0b1220; font-weight:900; border-radius:12px; padding:10px 12px; }
 </style>
 """, unsafe_allow_html=True)
 
 # =============================
-# HEADER
+# LAYOUT
 # =============================
-st.markdown('<div class="card"><div class="h1">KARIM – WhatsApp Sender PRO+</div><div class="sub">Clean • Personalize • Send</div></div>', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1,2.4,1])
 
-# =============================
-# SIDEBAR
-# =============================
-with st.sidebar:
-    st.markdown("### ⚙️ Settings")
-    platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=False)
+# -------- Left sider
+with col1:
+    st.markdown('<div class="panel">', unsafe_allow_html=True)
+    st.markdown("### 🧰 Bulk Tools")
+    if ss.get("last_numbers"):
+        st.download_button("⬇️ Download .txt", "\n".join(ss["last_numbers"]), file_name="clean_numbers.txt", key="dl-side")
+        copy_to_clipboard_code("\n".join(ss["last_numbers"]), "Copy All Numbers")
+    else:
+        st.markdown('<div class="info-card">ℹ️ Clean numbers will appear here after filtering.</div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("### 🔗 Import / Export")
+    st.markdown("**• Upload CSV/Excel or paste numbers.  • Export or copy filtered numbers.**")
+    st.markdown("---")
+    st.markdown("### ✨ New")
+    st.markdown("**One‑click copy • Strong bold typography • Darker, crisper UI**")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# -------- Right sider
+with col3:
+    st.markdown('<div class="panel">', unsafe_allow_html=True)
+    st.markdown("### ⚡ Quick Links & News")
+    st.markdown("**Official Catalog:**  \n[eurosweet.com.tr](https://eurosweet.com.tr)")
+    st.markdown("**Contact Developer:**  \n[karim.amsha@gmail.com](mailto:karim.amsha@gmail.com)")
+    st.markdown("**Latest Update:**  \n🚀 Full features restored + stronger fonts")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# -------- Main center
+with col2:
+    st.markdown('<div class="panel">', unsafe_allow_html=True)
+    st.markdown('<div class="k-logo">KARIM</div>', unsafe_allow_html=True)
+    st.markdown('<div class="k-sub">WhatsApp Broadcast Sender • Full V2</div>', unsafe_allow_html=True)
+
+    # Mode switch
+    st.markdown("#### Mode")
+    mode = st.radio("", ["Simple: Numbers Only", "Smart: Personalized Name & Country"], horizontal=True, key="mode")
+
+    # Common: platform
+    st.markdown("#### Platform")
+    platform = st.radio("", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat")
     platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
 
-    st.markdown("---")
-    st.markdown("### 🌍 Default Country Code")
-    st.write("If numbers are local (start with 0 or short), we'll prepend this country code (digits only).")
-    default_cc = st.text_input("Country code (e.g., 20 for Egypt, 971 for UAE, 90 for Türkiye)", value="")
-    default_cc = clean_number(default_cc)
-
-    st.markdown("---")
-    st.markdown("### 🎯 Workflow")
-    st.caption("1) Upload or paste numbers  →  2) Clean & dedupe  →  3) Compose  →  4) Send")
-    st.caption("TIP: Use tabs to navigate.")
-
-# =============================
-# MAIN TABS
-# =============================
-tab1, tab2, tab3 = st.tabs(["📥 Upload & Clean", "✍️ Compose", "📤 Send"])
-
-# -----------------------------
-# TAB 1 – Upload & Clean
-# -----------------------------
-with tab1:
-    st.markdown("#### Import data")
-    colA, colB = st.columns([1.15, 1])
-    with colA:
-        uploaded = st.file_uploader("Upload CSV or Excel (columns can be in any order).", type=["csv", "xlsx", "xls"])
-    with colB:
-        st.download_button("⬇️ Sample CSV", "number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n", file_name="example_contacts.csv")
-
-    numbers, names, countries = [], [], []
+    # Initialize data containers for this run
+    numbers = []
+    names = []
+    countries = []
     df = None
 
-    if uploaded is not None:
-        try:
-            fname = uploaded.name.lower()
-            if fname.endswith(".csv"):
-                df = pd.read_csv(uploaded)
-            else:
-                df = pd.read_excel(uploaded)
+    if mode == "Simple: Numbers Only":
+        # Language choice with 5 templates
+        st.markdown("#### Language")
+        lang = st.radio("", ["🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"], horizontal=True, key="lang")
+        lang_code = {"🇬🇧 English":"en","🇸🇦 العربية":"ar","🇹🇷 Türkçe":"tr","🇫🇷 Français":"fr","🇪🇸 Español":"es"}[lang]
 
-            st.success(f"Loaded {len(df)} rows.")
-            cols = list(df.columns)
-            st.markdown("##### Map your columns")
-            col1, col2, col3 = st.columns(3)
-            number_col = col1.selectbox("🟣 Number column", cols, index=0)
-            name_col = col2.selectbox("🟢 Name column (optional)", ["- none -"] + cols, index=min(1, len(cols)))
-            country_col = col3.selectbox("🔵 Country column (optional)", ["- none -"] + cols, index=min(2, len(cols)))
+        st.markdown("#### Numbers")
+        numbers_raw = st.text_area("Paste numbers (comma/newline/any format)", height=120, placeholder="e.g. +971 50 000 0001, 0020-111-222-3344 ...")
+        numbers = extract_numbers(numbers_raw)
+        names = [''] * len(numbers)
+        countries = [''] * len(numbers)
+        msg_template = templates[lang_code]
 
-            df[number_col] = df[number_col].astype(str).map(clean_number)
-            df = df[df[number_col].str.len() >= 8].copy()
-            df.fillna("", inplace=True)
+        # Default country code & cleaning
+        default_cc = st.text_input("Default Country Code (optional, digits only)", value="", key="dcc_simple")
+        if st.button("🧹 Clean Numbers", key="clean_simple"):
+            cleaned = normalize_batch(numbers, default_cc=clean_number(default_cc))
+            ss["last_numbers"] = cleaned
+            numbers = cleaned
 
-            numbers = df[number_col].tolist()
-            names = (df[name_col].tolist() if name_col != "- none -" else [""] * len(df))
-            countries = (df[country_col].tolist() if country_col != "- none -" else [""] * len(df))
+        if numbers_raw and numbers:
+            st.markdown("#### Filtered Numbers")
+            st.code('\n'.join(numbers), language="text")
+            copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
+            st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt", key="dl-main")
 
-        except Exception as e:
-            st.error(f"Failed to read file: {e}")
-            df = None
-
-    st.markdown("##### Or paste numbers (any format)")
-    raw = st.text_area("Paste comma/newline/mixed text here", height=120, placeholder="e.g. tel +254 722 206312, 0020-111-222-3344, 0597 499 217 ...")
-    pasted = extract_numbers(raw)
-    if pasted:
-        st.info(f"Found {len(pasted)} numbers from pasted text.")
-
-    colx, coly = st.columns(2)
-    with colx:
-        st.markdown("##### Clean & normalize")
-        if st.button("🧹 Clean numbers (apply default CC + dedupe)"):
-            base_list = numbers or pasted
-            if not base_list:
-                st.warning("Upload a file or paste numbers first.")
-            else:
-                cleaned = normalize_batch(base_list, default_cc=default_cc)
-                st.success(f"{len(cleaned)} numbers are ready after normalization.")
-                ss.numbers = cleaned
-                ss.names = names if numbers else [""] * len(cleaned)
-                ss.countries = countries if numbers else [""] * len(cleaned)
-                ss.df = pd.DataFrame({
-                    "number": ss.numbers,
-                    "name": ss.names,
-                    "country": ss.countries
-                })
-    with coly:
-        if ss.df is not None and not ss.df.empty:
-            st.markdown("##### Export cleaned numbers")
-            st.download_button("⬇️ Download .txt", "\n".join(ss.numbers), file_name="clean_numbers.txt")
-            st.download_button("⬇️ Download .csv", ss.df.to_csv(index=False), file_name="cleaned_contacts.csv")
-            copy_to_clipboard_code("\n".join(ss.numbers), "Copy all numbers")
-
-    if ss.df is not None and not ss.df.empty:
-        st.markdown("##### Preview cleaned data")
-        st.dataframe(ss.df, use_container_width=True, height=260, hide_index=True)
     else:
-        st.markdown('<div class="table-box small">No cleaned data yet. Upload or paste, then click <b>Clean numbers</b>.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card">You can upload a CSV (<b>number,name,country</b>) or enter data manually.</div>', unsafe_allow_html=True)
+        st.download_button("⬇️ Download example CSV", "number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n", file_name="example_contacts.csv")
 
-# -----------------------------
-# TAB 2 – Compose
-# -----------------------------
-with tab2:
-    st.markdown("#### Select a template language or write your own")
-    colL, colR = st.columns([1, 1])
-    with colL:
-        lang = st.radio("Templates", ["English (en)", "العربية (ar)", "Custom"], horizontal=True)
-    with colR:
-        st.markdown("""
-        <div class="kbar">
-            <span class="badge">{name}</span>
-            <span class="badge">{country}</span>
-            <span class="badge">{number}</span>
-        </div>
-        """, unsafe_allow_html=True)
+        data_opt = st.radio("Input method", ["Upload CSV/Excel", "Manual entry"], horizontal=True, key="smart_input")
 
-    if lang == "English (en)":
-        template = ss.templates["en"]
-    elif lang == "العربية (ar)":
-        template = ss.templates["ar"]
-    else:
-        template = st.text_area("Write your message template", height=230, value=ss.templates["en"])
+        if data_opt == "Upload CSV/Excel":
+            uploaded_file = st.file_uploader("Upload file (CSV or Excel: number,name,country)", type=["csv","xlsx","xls"])
+            if uploaded_file is not None:
+                try:
+                    filename = uploaded_file.name.lower()
+                    if filename.endswith('.csv'):
+                        df = pd.read_csv(uploaded_file)
+                    else:
+                        df = pd.read_excel(uploaded_file)
+                    columns = list(df.columns)
+                    number_col = st.selectbox("Number column", columns, index=0)
+                    name_col = st.selectbox("Name column (optional)", ["- none -"] + columns, index=min(1, len(columns)))
+                    country_col = st.selectbox("Country column (optional)", ["- none -"] + columns, index=min(2, len(columns)))
 
-    ok, missing, extra = validate_placeholders(template)
-    if extra:
-        st.error(f"Unknown placeholders in template: {', '.join(sorted(extra))}")
-    else:
-        st.success("Template variables look good.")
+                    df = df.dropna(subset=[number_col]).copy()
+                    df[number_col] = df[number_col].astype(str).apply(clean_number)
+                    df = df[df[number_col].str.len() >= 8].astype(str)
 
-    if ss.df is not None and not ss.df.empty:
-        idx = min(ss.current, len(ss.numbers)-1) if ss.numbers else 0
-        example_name = ss.names[idx] if ss.names else ""
-        example_country = ss.countries[idx] if ss.countries else ""
-        example_number = ss.numbers[idx] if ss.numbers else ""
+                    numbers = df[number_col].tolist()
+                    names = df[name_col].tolist() if name_col != "- none -" else ['']*len(df)
+                    countries = df[country_col].tolist() if country_col != "- none -" else ['']*len(df)
 
-        try:
-            preview = template.format(name=example_name, country=example_country, number=example_number)
-        except Exception as e:
-            preview = f"⚠️ Format error: {e}"
-
-        st.markdown("##### Live preview with current contact")
-        st.text_area("Preview", value=preview, height=200)
-
-    st.markdown("---")
-    colSave, colReset = st.columns(2)
-    with colSave:
-        if lang == "Custom":
-            if st.button("💾 Save as custom (overwrites EN slot)"):
-                ss.templates["en"] = template
-                st.success("Saved to English slot.")
+                    st.success(f"{len(df)} contacts loaded.")
+                except Exception as e:
+                    st.error(f"Failed to process file: {e}")
         else:
-            # allow edit built-in then save
-            edited = st.text_area("Edit selected template (optional)", value=template, height=160, key="edit_tmpl")
-            if st.button("💾 Save edits"):
-                key = "en" if lang.startswith("English") else "ar"
-                ss.templates[key] = edited
-                st.success(f"Saved changes to {key.upper()} template.")
+            st.info("Enter data manually (add/remove rows as needed):")
+            example_data = pd.DataFrame({'number':['201111223344','971500000001'],'name':['Mohamed','Ahmed'],'country':['Egypt','UAE']})
+            df = st.data_editor(example_data, num_rows="dynamic", use_container_width=True, key="editor")
+            df["number"] = df["number"].apply(clean_number)
+            df = df[df["number"].str.len() >= 8].astype(str)
+            numbers = df['number'].tolist() if 'number' in df.columns else []
+            names = df['name'].tolist() if 'name' in df.columns else ['']*len(df)
+            countries = df['country'].tolist() if 'country' in df.columns else ['']*len(df)
 
-    with colReset:
-        if st.button("♻️ Reset progress & skips"):
-            ss.current = 0
-            ss.skipped = set()
-            st.success("Progress reset.")
+        # cleaning controls
+        default_cc = st.text_input("Default Country Code (optional, digits only)", value="", key="dcc_smart")
+        if st.button("🧹 Clean & Normalize List", key="normalize_smart"):
+            numbers = normalize_batch(numbers, default_cc=clean_number(default_cc))
+            st.success(f"{len(numbers)} numbers ready after normalization.")
 
-# -----------------------------
-# TAB 3 – Send
-# -----------------------------
-with tab3:
-    st.markdown("#### Send messages")
-    if not ss.numbers:
-        st.warning("No numbers loaded. Go to **Upload & Clean** first.")
-    else:
-        total = len(ss.numbers)
-        current = min(ss.current, total-1)
-        percent = int(((current+1) / total) * 100) if total else 0
+        msg_template = st.text_area(
+            "Write message template (use {name}, {country}, {number})",
+            value=(
+                "Hello {name} 👋\n\n"
+                "We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).\n\n"
+                "We specialize in producing high-quality snacks.\n\n"
+                "We’re eager to connect with reliable partners in {country}.\n\n"
+                "Best regards,\nSales Department"
+            ),
+            height=200, key="smart_template"
+        )
 
-        st.markdown(f'<div class="progress-circle" style="--p:{percent}%"><span>{current+1}/{total}</span></div>', unsafe_allow_html=True)
+        ss["last_numbers"] = numbers if numbers else []
+        if df is not None and not df.empty:
+            st.markdown("#### Filtered Numbers")
+            st.code('\n'.join(numbers), language="text")
+            copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
+            st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt", key="dl-main-smart")
 
-        colA, colB = st.columns([2.2, 1])
-        with colA:
-            # Compose final message for current contact
-            name = ss.names[current] if ss.names else ""
-            country = ss.countries[current] if ss.countries else ""
-            number = ss.numbers[current]
+    # ======= Sending / Progress =======
+    if 'current' not in ss:
+        ss.current = 0
+    if 'skipped' not in ss:
+        ss.skipped = set()
 
-            # Use latest chosen template from tab2 (prefer edited if present)
-            active_template = ss.templates.get("en", "")
-            # If user used Arabic selection and saved to 'ar', fallback detection:
-            active_template = ss.templates.get("en", active_template)
-            final_template = st.text_area("Message to send (per contact)", value=(ss.templates.get("en") or "").format(
-                name=name, country=country, number=number
-            ), height=180, key="final_msg_box")
+    if numbers:
+        current_index = min(ss.current, len(numbers)-1)
+        percent = int(((current_index+1) / len(numbers)) * 100)
 
-        with colB:
-            st.markdown("##### Contact")
-            st.write(f"**#{current+1} / {total}**")
-            info = f"**{number}**"
-            if name:
-                info += f" — {name}"
-            if country:
-                info += f" — {country}"
-            st.write(info)
+        progress_html = f"""
+        <div style="margin:8px 0;"><b style="color:#0b1220;font-size:1.05rem">Progress</b></div>
+        <div style="width:64px;height:64px;margin:auto;position:relative;">
+            <div style="width:64px;height:64px;border-radius:50%;
+                background:conic-gradient(#0ea5e9 {percent}%, #e2e8f0 {percent}% 100%);
+                display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #0ea5e933;">
+                <span style="font-size:1.02rem;color:#0b1220;font-weight:1000;">
+                    {current_index+1}/{len(numbers)}
+                </span>
+            </div>
+        </div>
+        """
+        st.markdown(progress_html, unsafe_allow_html=True)
 
-            st.markdown("##### Quick list")
-            max_show = min(120, total)
-            small_list = [f"{i+1}. {ss.numbers[i]}" + (f" - {ss.names[i]}" if i < len(ss.names) and ss.names[i] else "") for i in range(max_show)]
-            st.text("\n".join(small_list))
+        # current message
+        try:
+            msg_personal = msg_template.format(
+                name=names[current_index] if names else '',
+                country=countries[current_index] if countries else '',
+                number=numbers[current_index]
+            )
+        except Exception as e:
+            msg_personal = f"⚠️ Template error: {e}"
 
-        col1, col2, col3, col4 = st.columns([1.1, 1.1, 1.8, 1.1])
-        with col1:
-            if st.button("← Prev", disabled=(current <= 0)):
-                ss.current = max(0, ss.current-1)
-        with col2:
-            if st.button("Skip", disabled=(ss.numbers[current] in ss.skipped)):
-                ss.skipped.add(ss.numbers[current])
-                if ss.current < total-1:
-                    ss.current += 1
-        with col3:
-            if st.button("🚀 Open WhatsApp"):
-                msg = st.session_state.get("final_msg_box","").strip()
-                url = build_whatsapp_url(ss.numbers[current], msg, platform_type)
-                st.markdown(
-                    f"<div style='text-align:center; margin-top:6px;'>"
-                    f"<a href='{url}' target='_blank' style='font-weight:bold; color:#2563eb; font-size:17px;'>"
-                    "Open in WhatsApp</a></div>", unsafe_allow_html=True
-                )
-                st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
-        with col4:
-            if st.button("Next →", disabled=(current >= total-1)):
-                ss.current = min(total-1, ss.current+1)
+        message = st.text_area("Message", value=msg_personal, height=150, key="msgboxfinal")
+        st.write(f"**Contact:** {current_index+1} / {len(numbers)}")
+        info = f'{numbers[current_index]}'
+        if mode == "Smart: Personalized Name & Country":
+            if names and len(names) > current_index and names[current_index]:
+                info += f" — {names[current_index]}"
+            if countries and len(countries) > current_index and countries[current_index]:
+                info += f" — {countries[current_index]}"
+        st.markdown(f'<span class="tag">{info}</span>', unsafe_allow_html=True)
 
-# =============================
-# FOOTER
-# =============================
-st.markdown(f'<div class="footer">✦ Built for <b>KARIM</b> • {datetime.now().year} • PRO+</div>', unsafe_allow_html=True)
+        # list with active
+        items = []
+        for i in range(len(numbers)):
+            item = f"{i+1}. {numbers[i]}"
+            if mode == "Smart: Personalized Name & Country":
+                if names and i < len(names) and names[i]:
+                    item += f" - {names[i]}"
+                if countries and i < len(countries) and countries[i]:
+                    item += f" - {countries[i]}"
+            css_class = "active" if i == current_index else ""
+            items.append(f"<div class='{css_class}'>{item}</div>")
+        st.markdown('<div class="k-list">' + "".join(items) + "</div>", unsafe_allow_html=True)
+
+        cols = st.columns([1.1, 1.1, 1.8, 1.1])
+        prev_disabled = current_index <= 0
+        next_disabled = current_index >= len(numbers)-1
+        skip_disabled = numbers[current_index] in ss.skipped
+
+        if cols[0].button("← Prev", disabled=prev_disabled, key="prev"):
+            ss.current = max(0, ss.current-1)
+
+        if cols[1].button("Skip", disabled=skip_disabled, key="skip"):
+            ss.skipped.add(numbers[current_index])
+            if ss.current < len(numbers)-1:
+                ss.current += 1
+
+        if cols[2].button("Open WhatsApp", disabled=not message.strip(), key="open"):
+            url = build_whatsapp_url(numbers[current_index], message, "web" if platform == "💻 WhatsApp Web" else "mobile")
+            st.markdown(
+                f"<div style='text-align:center; margin-top:6px;'>"
+                f"<a href='{url}' target='_blank' style='font-weight:900; color:#0ea5e9; font-size:18px;'>"
+                "🚀 Click here if WhatsApp didn't open</a></div>", unsafe_allow_html=True
+            )
+            st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
+
+        if cols[3].button("Next →", disabled=next_disabled, key="next"):
+            ss.current = min(len(numbers)-1, ss.current+1)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown(f'<div class="footer">✦ Powered by <b>KARIM OTHMAN</b> • {datetime.now().year}</div>', unsafe_allow_html=True)
