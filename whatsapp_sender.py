@@ -9,7 +9,7 @@ from datetime import datetime
 # APP CONFIG
 # =============================
 st.set_page_config(
-    page_title="KARIM | WhatsApp Sender – Hybrid V3.1",
+    page_title="KARIM | WhatsApp Sender – Hybrid V3.2",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -164,64 +164,86 @@ ss.setdefault("countries", [])
 ss.setdefault("current", 0)
 ss.setdefault("skipped", set())
 ss.setdefault("last_numbers", [])
-ss.setdefault("theme", "Classic Glass")
+ss.setdefault("theme", "Pure Black")
 ss.setdefault("saved_custom", "")
+ss.setdefault("heading_color", "#22d3ee")  # default for dark
+ss.setdefault("text_color", "#e5e7eb")     # default for dark
 
 # =============================
-# THEMES (CSS)
+# THEME CONTROLS
 # =============================
-CSS_CLASSIC = """
-<style>
-:root { --pri:#4f46e5; --sec:#8b5cf6; --sky:#06b6d4; --ink:#0f172a; }
-.stApp {background: radial-gradient(1200px 600px at 10% 0%, #eef2ff 0%, #f7f7ff 20%, #ffffff 60%) fixed !important;}
-.block-container {padding-top:18px; padding-bottom:14px;}
-.card {background:#fff; border:1px solid #e7e8ff; border-radius:18px; box-shadow:0 8px 28px rgba(53, 35, 160, .10); padding:20px 18px; margin-bottom:14px;}
-.h1 {font-weight:900; font-size:2.1rem; letter-spacing:2px; text-align:center; background:linear-gradient(90deg,#4f46e5,#8b5cf6,#06b6d4);
--webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px;}
-.sub {text-align:center; color:#4f46e5; font-weight:800; letter-spacing:.6px; margin-bottom:14px;}
-.stButton>button {background:linear-gradient(90deg, #4f46e5, #06b6d4); border-radius:10px !important; color:#fff !important; font-weight:800; border:none !important; box-shadow:0 10px 22px rgba(79,70,229,.22);}
-.stButton>button:hover { transform: translateY(-1px); }
-.badge {display:inline-block; padding:6px 10px; border-radius:999px; background:linear-gradient(90deg,#e0e7ff,#e0f2fe); color:#1e293b; font-weight:800; border:1px solid #dbeafe; margin-right:6px;}
-.table-box {background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:12px; box-shadow: inset 0 1px 0 #fff;}
-.progress-circle {width: 64px; height:64px; border-radius:50%; background: conic-gradient(#06b6d4 var(--p,0%), #e2e8f0 var(--p,0%) 100%); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(2,132,199,0.18); margin: 0 auto 8px;}
-.progress-circle span { font-weight:900; color:#0ea5e9; }
-.k-list { display:flex; flex-direction:column; gap:2px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:10px; padding:8px; max-height:150px; overflow:auto; color:#334155; font-weight:800;}
-.k-list .active { background:linear-gradient(90deg,#0ea5e9,#22d3ee); color:#fff; border-radius:7px; padding-left:6px; }
-</style>
-"""
-
-CSS_BLACK = """
-<style>
-:root { --bg:#000; --panel:#0b0b0b; --panel-border:#1a1a1a; --ink:#fff; --ink2:#cfd3dc; --accent:#22d3ee; --accent2:#60a5fa; }
-.stApp { background: var(--bg) !important; }
-.block-container { padding-top:16px; }
-.card { background: linear-gradient(180deg,#0a0a0a,#0f0f0f); border:1px solid var(--panel-border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.02); padding:20px 18px; margin:10px 0 14px; }
-.h1 { font-weight:1000; font-size:2.2rem; letter-spacing:6px; text-align:center; background: linear-gradient(90deg, #fff, var(--accent2), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }
-.sub { text-align:center; color:var(--ink); font-weight:900; letter-spacing:1px; margin-bottom:10px; opacity:.95; }
-label, h3, h4, .stMarkdown p { color:var(--ink); font-weight:900; }
-input, textarea { background:#0c0c0c !important; color:var(--ink) !important; border:1.4px solid #1f2937 !important; border-radius:10px !important; font-weight:900 !important; }
-.stButton>button { background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 11px !important; color:#fff !important; font-weight:1000 !important; border:none !important; box-shadow: 0 10px 24px rgba(3,105,161,.35); }
-.stButton>button:hover { transform: translateY(-1px); }
-.progress-circle {width: 64px; height:64px; border-radius:50%; background: conic-gradient(var(--accent) var(--p,0%), #111827 var(--p,0%) 100%); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(34,211,238,.22); margin: 0 auto 8px;}
-.progress-circle span { font-weight:1000; color:#e5e7eb; }
-.k-list { display:flex; flex-direction:column; gap:2px; background:#0a0a0a; border:1px solid #171923; border-radius:10px; padding:8px; max-height:150px; overflow:auto; color:#cbd5e1; font-weight:900; }
-.k-list .active { background: linear-gradient(90deg, rgba(34,211,238,.25), rgba(96,165,250,.25)); color:#fff; border-left: 4px solid var(--accent); border-radius: 7px; padding-left: 6px; }
-.badge { display:inline-block; padding:6px 10px; border-radius:999px; background:linear-gradient(90deg,#0b1220,#0f172a); color:#e5e7eb; font-weight:1000; border:1px solid #1f2937; margin-right:6px; }
-</style>
-"""
-
-# Theme toggle in sidebar (persisted)
 with st.sidebar:
-    theme = st.radio("Theme", ["Classic Glass", "Pure Black"], index=0 if ss.theme == "Classic Glass" else 1)
+    st.markdown("### 🎨 Theme & Colors")
+    theme = st.radio("Theme", ["Classic Glass", "Pure Black"], index=1 if ss.theme == "Pure Black" else 0)
     ss.theme = theme
-    st.caption("Switch theme anytime.")
+    ss.heading_color = st.color_picker("Heading/Label Color", ss.heading_color, help="ينطبق على العناوين والتبويبات والراديو والليبل")
+    ss.text_color = st.color_picker("Body/Text Color", ss.text_color, help="لون النص العام في الثيم المختار")
 
-st.markdown(CSS_CLASSIC if ss.theme == "Classic Glass" else CSS_BLACK, unsafe_allow_html=True)
+# =============================
+# CSS BUILDERS
+# =============================
+def css_classic(heading_color: str, text_color: str) -> str:
+    return f"""
+<style>
+:root {{ --pri:#4f46e5; --sec:#8b5cf6; --sky:#06b6d4; --ink:{text_color}; }}
+.stApp {{background: radial-gradient(1200px 600px at 10% 0%, #eef2ff 0%, #f7f7ff 20%, #ffffff 60%) fixed !important;}}
+.block-container {{padding-top:18px; padding-bottom:14px;}}
+.card {{background:#fff; border:1px solid #e7e8ff; border-radius:18px; box-shadow:0 8px 28px rgba(53, 35, 160, .10); padding:20px 18px; margin-bottom:14px;}}
+.h1 {{font-weight:900; font-size:2.1rem; letter-spacing:2px; text-align:center; background:linear-gradient(90deg,{heading_color},{heading_color},#06b6d4);
+-webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px;}}
+.sub {{text-align:center; color:{heading_color}; font-weight:900; letter-spacing:.6px; margin-bottom:14px;}}
+/* labels + tabs + radios */
+label, h3, h4, .stMarkdown p, .stTextInput label, .stSelectbox label, .stRadio label, .stTextArea label {{ color:{heading_color} !important; font-weight:900 !important; }}
+/* tabs */
+.stTabs [data-baseweb="tab"] button p {{ color:{heading_color} !important; font-weight:900 !important; }}
+/* radio/checkbox inner text */
+.stRadio > div[role="radiogroup"] * {{ color:{text_color} !important; font-weight:700 !important; }}
+/* inputs */
+input, textarea {{ border-radius:10px !important; background:#f8fafc !important; color:{text_color} !important; border:1.4px solid #dce1fb !important; font-weight:700;}}
+/* buttons */
+.stButton>button {{background:linear-gradient(90deg, #4f46e5, #06b6d4); border-radius:10px !important; color:#fff !important; font-weight:900; border:none !important; box-shadow:0 10px 22px rgba(79,70,229,.22);}}
+.stButton>button:hover {{ transform: translateY(-1px); }}
+.progress-circle {{width: 64px; height:64px; border-radius:50%; background: conic-gradient(#06b6d4 var(--p,0%), #e2e8f0 var(--p,0%) 100%); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(2,132,199,0.18); margin: 0 auto 8px;}}
+.progress-circle span {{ font-weight:900; color:#0ea5e9; }}
+.k-list {{ display:flex; flex-direction:column; gap:2px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:10px; padding:8px; max-height:150px; overflow:auto; color:{text_color}; font-weight:800;}}
+.k-list .active {{ background:linear-gradient(90deg,#0ea5e9,#22d3ee); color:#fff; border-radius:7px; padding-left:6px; }}
+</style>
+"""
+
+def css_black(heading_color: str, text_color: str) -> str:
+    return f"""
+<style>
+:root {{ --bg:#000; --panel:#0b0b0b; --panel-border:#1a1a1a; --ink:{text_color}; --accent:{heading_color}; }}
+.stApp {{ background: var(--bg) !important; }}
+.block-container {{ padding-top:16px; }}
+.card {{ background: linear-gradient(180deg,#0a0a0a,#0f0f0f); border:1px solid var(--panel-border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.02); padding:20px 18px; margin:10px 0 14px; }}
+.h1 {{ font-weight:1000; font-size:2.2rem; letter-spacing:6px; text-align:center; background: linear-gradient(90deg, #fff, {heading_color}, {heading_color}); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }}
+.sub {{ text-align:center; color:{heading_color}; font-weight:1000; letter-spacing:1px; margin-bottom:10px; opacity:.95; }}
+/* labels + tabs + radios */
+label, h3, h4, .stMarkdown p, .stTextInput label, .stSelectbox label, .stRadio label, .stTextArea label {{ color:{heading_color} !important; font-weight:1000 !important; }}
+/* tabs text */
+.stTabs [data-baseweb="tab"] button p {{ color:{heading_color} !important; font-weight:1000 !important; }}
+/* radio/checkbox inner text */
+.stRadio > div[role="radiogroup"] * {{ color:{text_color} !important; font-weight:900 !important; }}
+/* inputs */
+input, textarea {{ background:#0c0c0c !important; color:{text_color} !important; border:1.4px solid #1f2937 !important; border-radius:10px !important; font-weight:900 !important; }}
+/* buttons */
+.stButton>button {{ background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 11px !important; color:#fff !important; font-weight:1000 !important; border:none !important; box-shadow: 0 10px 24px rgba(3,105,161,.35); }}
+.stButton>button:hover {{ transform: translateY(-1px); }}
+.progress-circle {{width: 64px; height:64px; border-radius:50%; background: conic-gradient({heading_color} var(--p,0%), #111827 var(--p,0%) 100%); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(34,211,238,.22); margin: 0 auto 8px;}}
+.progress-circle span {{ font-weight:1000; color:{text_color}; }}
+.k-list {{ display:flex; flex-direction:column; gap:2px; background:#0a0a0a; border:1px solid #171923; border-radius:10px; padding:8px; max-height:150px; overflow:auto; color:{text_color}; font-weight:900; }}
+.k-list .active {{ background: linear-gradient(90deg, rgba(34,211,238,.25), rgba(96,165,250,.25)); color:#fff; border-left: 4px solid {heading_color}; border-radius: 7px; padding-left: 6px; }}
+</style>
+"""
+
+# Apply CSS
+st.markdown(css_classic(ss.heading_color, ss.text_color) if ss.theme == "Classic Glass" else css_black(ss.heading_color, ss.text_color), unsafe_allow_html=True)
 
 # =============================
 # HEADER
 # =============================
-st.markdown('<div class="card"><div class="h1">KARIM – WhatsApp Sender</div><div class="sub">Hybrid V3.1 • Clean • Personalize • Send</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="card"><div class="h1">KARIM – WhatsApp Sender</div><div class="sub">Hybrid V3.2 • Custom Colors</div></div>', unsafe_allow_html=True)
 
 # =============================
 # SIDEBAR CONTROLS
@@ -406,10 +428,10 @@ with tab3:
         colA, colB = st.columns([2.2, 1])
         with colA:
             if st.button("🚀 Open WhatsApp"):
-                url = build_whatsapp_url(number, message, platform_type=platform_type)
+                url = build_whatsapp_url(number, message, platform_type=st.session_state.get("platform_type","web"))
                 st.markdown(
                     f"<div style='text-align:center; margin-top:6px;'>"
-                    f"<a href='{url}' target='_blank' style='font-weight:900; color:#0ea5e9; font-size:17px;'>"
+                    f"<a href='{url}' target='_blank' style='font-weight:900; color:{ss.heading_color}; font-size:17px;'>"
                     "Open in WhatsApp</a></div>", unsafe_allow_html=True
                 )
                 st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
