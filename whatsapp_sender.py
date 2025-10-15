@@ -9,7 +9,7 @@ from datetime import datetime
 # APP CONFIG
 # =============================
 st.set_page_config(
-    page_title="KARIM | WhatsApp Sender V2 (Full Features)",
+    page_title="KARIM | WhatsApp Sender V3 – Pure Black",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -51,8 +51,8 @@ def copy_to_clipboard_code(content, label="Copy"):
     btn_id = "copybtn" + str(abs(hash(content)) % (10**9))
     st.markdown(f"""
     <button id="{btn_id}" style="
-        background:linear-gradient(90deg,#111827,#1f2937);
-        border:none;border-radius:9px;padding:9px 20px;
+        background:linear-gradient(90deg,#0ea5e9,#2563eb);
+        border:none;border-radius:10px;padding:10px 20px;
         color:#fff;font-size:0.98em;font-weight:900;
         margin:8px 0;cursor:pointer;">{label}</button>
     <script>
@@ -74,14 +74,14 @@ def build_whatsapp_url(number: str, message: str, platform: str = "web"):
     return f"https://wa.me/{number}?text={msg_encoded}"
 
 # =============================
-# TEMPLATES
+# TEMPLATES (5 languages)
 # =============================
 templates = {
     'en': """Hello 👋
 
 We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
 
-We specialize in producing high‑quality snacks such as:
+We specialize in producing high-quality snacks such as:
 🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
 
 We're always eager to connect with reliable partners and explore new markets together. 🤝
@@ -166,42 +166,115 @@ ss.setdefault("skipped", set())
 ss.setdefault("last_numbers", [])
 
 # =============================
-# CSS – Strong bold typography + dark ink
+# PURE BLACK THEME (CSS)
 # =============================
 st.markdown("""
 <style>
-:root { --ink:#0b1220; --blue:#0ea5e9; --indigo:#4f46e5; --cyan:#0891b2; --bg1:#f8fbff; --bg2:#eef2ff; }
-.stApp { background: radial-gradient(1200px 600px at 5% -10%, var(--bg2) 0%, #ffffff 40%) fixed; }
-.block-container { padding-top:16px; }
-.k-logo { font-weight: 1000; font-size: 2.3rem; letter-spacing: 8px; text-align:center;
-  background:linear-gradient(90deg,#1f2937, #0ea5e9 70%, #22d3ee);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom:4px; }
-.k-sub { text-align:center; color:#0b1220; font-weight: 900; letter-spacing:1.4px; font-size:1.12rem; margin-bottom:12px; }
+:root {
+  --bg: #000000;
+  --panel: #0b0b0b;
+  --panel-border: #1a1a1a;
+  --ink: #ffffff;
+  --ink-dim: #cfd3dc;
+  --accent: #22d3ee;
+  --accent2: #60a5fa;
+  --muted: #0f172a;
+}
+html, body, .stApp { background: var(--bg) !important; }
+.block-container { padding-top: 16px; }
+
+/* Panels */
 .panel {
-  background:#fff; border:1.4px solid #e6e9f7; border-radius:18px;
-  box-shadow:0 10px 26px rgba(15,23,42,0.08); padding:20px 18px; margin: 10px 0 14px;
+  background: linear-gradient(180deg, #0a0a0a, #0f0f0f);
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.02);
+  padding: 20px 18px;
+  margin: 10px 0 14px;
 }
+
+/* Headings / Labels */
 h3, h4, label, .stMarkdown p, .stTextInput label, .stSelectbox label, .stRadio label, .stTextArea label {
-  color: var(--ink) !important; font-weight: 900 !important; letter-spacing:.2px;
+  color: var(--ink) !important;
+  font-weight: 900 !important;
+  letter-spacing: .3px;
 }
+/* Inputs */
+input, textarea, .stTextInput>div>input, .stTextArea>div>textarea {
+  background: #0c0c0c !important;
+  color: var(--ink) !important;
+  border: 1.4px solid #1f2937 !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+}
+/* Buttons */
 .stButton>button {
-  background:linear-gradient(90deg,#111827,#1f2937);
-  border-radius:10px !important; color:#fff !important; font-weight:900;
-  border:none !important; box-shadow:0 8px 18px rgba(2,6,23,.24);
+  background: linear-gradient(90deg, #2563eb, #06b6d4);
+  border-radius: 11px !important;
+  color: #fff !important;
+  font-weight: 1000 !important;
+  border: none !important;
+  box-shadow: 0 10px 24px rgba(3,105,161,.35);
 }
-.stButton>button:hover { transform: translateY(-1px); }
+.stButton>button:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(2,132,199,.38); }
 .stButton>button:active { transform: scale(.98); }
-.k-badge {
-  display:inline-block; font-weight:900; color:#0b1220; background:linear-gradient(90deg,#e2e8f0,#e0f2fe);
-  padding:6px 12px; border-radius:999px; border:1px solid #e5e7eb; margin-right:6px;
+
+/* Logo */
+.k-logo {
+  font-weight: 1000;
+  font-size: 2.4rem;
+  letter-spacing: 8px;
+  text-align:center;
+  background: linear-gradient(90deg, #ffffff, #60a5fa, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
 }
-.k-list { display:flex; flex-direction:column; gap:2px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:10px; padding:8px; max-height:120px; overflow:auto; }
-.k-list .active { background:linear-gradient(90deg,#0ea5e9,#22d3ee); color:#fff; font-weight:1000; border-radius:7px; padding-left:6px; }
-.tag {
-  display:inline-block;background:linear-gradient(90deg,#ecfeff,#eef2ff); border:1px solid #e2e8f0; padding:6px 10px; border-radius:10px; font-weight:900; color:#0f172a;
+.k-sub {
+  text-align:center;
+  color: var(--ink);
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  opacity: .92;
 }
-.footer { text-align:center; color:#0f172a; font-weight:900; margin-top:12px; }
-.info-card { background:linear-gradient(180deg,#f0f9ff,#ecfeff); border:1px solid #bae6fd; color:#0b1220; font-weight:900; border-radius:12px; padding:10px 12px; }
+
+/* Pills / badges */
+.tag, .k-badge {
+  display:inline-block;
+  background: linear-gradient(90deg, #0b1220, #0f172a);
+  border: 1px solid #1f2937;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 1000;
+  color: #e5e7eb;
+}
+
+/* Lists */
+.k-list {
+  display:flex; flex-direction:column; gap:2px;
+  background: #0a0a0a; border:1px solid #171923; border-radius:10px;
+  padding:8px; max-height:150px; overflow:auto; color:#cbd5e1; font-weight:900;
+}
+.k-list .active {
+  background: linear-gradient(90deg, rgba(34,211,238,.25), rgba(96,165,250,.25));
+  color: #ffffff;
+  border-left: 4px solid var(--accent);
+  border-radius: 7px;
+  padding-left: 6px;
+}
+
+/* Footer */
+.footer { text-align:center; color:#9ca3af; font-weight:900; margin-top:12px; }
+.info-card {
+  background: linear-gradient(180deg, rgba(96,165,250,.08), rgba(34,211,238,.06));
+  border: 1px solid #1f2937;
+  color: #d1d5db; font-weight:900; border-radius:12px; padding:10px 12px;
+}
+
+/* Code blocks */
+code, pre, .stCode { color:#d8dee9 !important; background: #0b0b0b !important; border-radius: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -224,8 +297,8 @@ with col1:
     st.markdown("### 🔗 Import / Export")
     st.markdown("**• Upload CSV/Excel or paste numbers.  • Export or copy filtered numbers.**")
     st.markdown("---")
-    st.markdown("### ✨ New")
-    st.markdown("**One‑click copy • Strong bold typography • Darker, crisper UI**")
+    st.markmarkdown("### ✨ What’s New")
+    st.markdown("**Pure Black theme • Bold typography • Same features, sleeker UI**")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # -------- Right sider
@@ -234,32 +307,30 @@ with col3:
     st.markdown("### ⚡ Quick Links & News")
     st.markdown("**Official Catalog:**  \n[eurosweet.com.tr](https://eurosweet.com.tr)")
     st.markdown("**Contact Developer:**  \n[karim.amsha@gmail.com](mailto:karim.amsha@gmail.com)")
-    st.markdown("**Latest Update:**  \n🚀 Full features restored + stronger fonts")
+    st.markdown("**Latest Update:**  \n🚀 V3 – Pure Black theme")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # -------- Main center
 with col2:
     st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown('<div class="k-logo">KARIM</div>', unsafe_allow_html=True)
-    st.markdown('<div class="k-sub">WhatsApp Broadcast Sender • Full V2</div>', unsafe_allow_html=True)
+    st.markdown('<div class="k-sub">WhatsApp Broadcast Sender • V3 Pure Black</div>', unsafe_allow_html=True)
 
-    # Mode switch
+    # Mode & Platform
     st.markdown("#### Mode")
     mode = st.radio("", ["Simple: Numbers Only", "Smart: Personalized Name & Country"], horizontal=True, key="mode")
 
-    # Common: platform
     st.markdown("#### Platform")
     platform = st.radio("", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat")
     platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
 
-    # Initialize data containers for this run
+    # Init containers
     numbers = []
     names = []
     countries = []
     df = None
 
     if mode == "Simple: Numbers Only":
-        # Language choice with 5 templates
         st.markdown("#### Language")
         lang = st.radio("", ["🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"], horizontal=True, key="lang")
         lang_code = {"🇬🇧 English":"en","🇸🇦 العربية":"ar","🇹🇷 Türkçe":"tr","🇫🇷 Français":"fr","🇪🇸 Español":"es"}[lang]
@@ -271,7 +342,6 @@ with col2:
         countries = [''] * len(numbers)
         msg_template = templates[lang_code]
 
-        # Default country code & cleaning
         default_cc = st.text_input("Default Country Code (optional, digits only)", value="", key="dcc_simple")
         if st.button("🧹 Clean Numbers", key="clean_simple"):
             cleaned = normalize_batch(numbers, default_cc=clean_number(default_cc))
@@ -325,7 +395,6 @@ with col2:
             names = df['name'].tolist() if 'name' in df.columns else ['']*len(df)
             countries = df['country'].tolist() if 'country' in df.columns else ['']*len(df)
 
-        # cleaning controls
         default_cc = st.text_input("Default Country Code (optional, digits only)", value="", key="dcc_smart")
         if st.button("🧹 Clean & Normalize List", key="normalize_smart"):
             numbers = normalize_batch(numbers, default_cc=clean_number(default_cc))
@@ -361,12 +430,12 @@ with col2:
         percent = int(((current_index+1) / len(numbers)) * 100)
 
         progress_html = f"""
-        <div style="margin:8px 0;"><b style="color:#0b1220;font-size:1.05rem">Progress</b></div>
-        <div style="width:64px;height:64px;margin:auto;position:relative;">
-            <div style="width:64px;height:64px;border-radius:50%;
-                background:conic-gradient(#0ea5e9 {percent}%, #e2e8f0 {percent}% 100%);
-                display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #0ea5e933;">
-                <span style="font-size:1.02rem;color:#0b1220;font-weight:1000;">
+        <div style='margin:8px 0;'><b style='color:#fff;font-size:1.05rem'>Progress</b></div>
+        <div style='width:64px;height:64px;margin:auto;position:relative;'>
+            <div style='width:64px;height:64px;border-radius:50%;
+                background:conic-gradient(#22d3ee {percent}%, #111827 {percent}% 100%);
+                display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(34,211,238,.25);'>
+                <span style='font-size:1.02rem;color:#e5e7eb;font-weight:1000;'>
                     {current_index+1}/{len(numbers)}
                 </span>
             </div>
@@ -384,7 +453,7 @@ with col2:
         except Exception as e:
             msg_personal = f"⚠️ Template error: {e}"
 
-        message = st.text_area("Message", value=msg_personal, height=150, key="msgboxfinal")
+        message = st.text_area("Message", value=msg_personal, height=160, key="msgboxfinal")
         st.write(f"**Contact:** {current_index+1} / {len(numbers)}")
         info = f'{numbers[current_index]}'
         if mode == "Smart: Personalized Name & Country":
@@ -392,7 +461,7 @@ with col2:
                 info += f" — {names[current_index]}"
             if countries and len(countries) > current_index and countries[current_index]:
                 info += f" — {countries[current_index]}"
-        st.markdown(f'<span class="tag">{info}</span>', unsafe_allow_html=True)
+        st.markdown(f"<span class='tag'>{info}</span>", unsafe_allow_html=True)
 
         # list with active
         items = []
@@ -423,9 +492,10 @@ with col2:
         if cols[2].button("Open WhatsApp", disabled=not message.strip(), key="open"):
             url = build_whatsapp_url(numbers[current_index], message, "web" if platform == "💻 WhatsApp Web" else "mobile")
             st.markdown(
-                f"<div style='text-align:center; margin-top:6px;'>"
-                f"<a href='{url}' target='_blank' style='font-weight:900; color:#0ea5e9; font-size:18px;'>"
-                "🚀 Click here if WhatsApp didn't open</a></div>", unsafe_allow_html=True
+                "<div style='text-align:center; margin-top:6px;'>"
+                "<a href='" + url + "' target='_blank' style='font-weight:900; color:#22d3ee; font-size:18px;'>"
+                "🚀 Click here if WhatsApp didn't open</a></div>",
+                unsafe_allow_html=True
             )
             st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
 
@@ -434,4 +504,4 @@ with col2:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown(f'<div class="footer">✦ Powered by <b>KARIM OTHMAN</b> • {datetime.now().year}</div>', unsafe_allow_html=True)
+st.markdown(f"<div class='footer'>✦ Powered by <b>KARIM OTHMAN</b> • {datetime.now().year}</div>", unsafe_allow_html=True)
