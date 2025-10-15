@@ -297,7 +297,7 @@ with col1:
     st.markdown("### 🔗 Import / Export")
     st.markdown("**• Upload CSV/Excel or paste numbers.  • Export or copy filtered numbers.**")
     st.markdown("---")
-    st.markmarkdown("### ✨ What’s New")
+    st.markdown("### ✨ What’s New")
     st.markdown("**Pure Black theme • Bold typography • Same features, sleeker UI**")
     st.markdown('</div>', unsafe_allow_html=True)
 
