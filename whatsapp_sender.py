@@ -523,17 +523,203 @@ with colL:
     )
     st.markdown("</div>", unsafe_allow_html=True)
 
-# -----------------------------------
-# 9.2) Right Column: Quick Links
-# -----------------------------------
-with colR:
-    st.markdown("<div class='card' style='padding:12px;'>", unsafe_allow_html=True)
-    st.markdown("<span class='label'>Quick Links</span>", unsafe_allow_html=True)
-    # روابط سريعة (يمكن تعديلها/إضافة غيرها)
-    st.markdown("- 🌐 [EUROSWEET Catalog](https://eurosweet.com.tr)")
-    st.markdown("- ✉️ karim.amsha@gmail.com")
-    st.markdown("- 🆕 Responsive + One-click Copy")
-    st.markdown("</div>", unsafe_allow_html=True)
+# ===============================
+# Quick Links (Pro) — UI & Logic
+# ===============================
+# ضع هذا القسم مرة واحدة (مثلاً بعد أقسام الـCSS العامة وقبل بناء الأعمدة)
+QUICK_LINKS_CSS = """
+<style>
+/* حاوية الروابط الاحترافية */
+.ql-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--cardb, #e6eef8);
+  background: var(--card, #fff);
+  box-shadow: 0 7px 27px rgba(36,44,76,.11), 0 1px 5px #00000010;
+}
+.ql-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+@media (min-width: 520px) {
+  .ql-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* عنصر الرابط */
+.ql-item {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--cardb, #e6eef8);
+  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
+  cursor: pointer;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.dark .ql-item { background: rgba(255,255,255,.05); }
+.ql-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(14,165,233,.16);
+  border-color: rgba(14,165,233,.35);
+}
+
+/* أيقونة يسار العنوان */
+.ql-icon {
+  width: 38px; height: 38px; min-width: 38px;
+  border-radius: 11px;
+  display: grid; place-items: center;
+  font-size: 18px; font-weight: 900;
+  color: #07111f;
+  background: linear-gradient(135deg, #38bdf8, #22d3ee);
+  box-shadow: 0 10px 22px rgba(56,189,248,.28);
+  user-select: none;
+}
+.ql-body { flex: 1; line-height: 1.25; }
+.ql-title { font-weight: 900; font-size: .98rem; margin: 0; }
+.ql-sub   { font-size: .84rem; opacity: .85; margin-top: 2px; }
+
+/* شارات صغيرة يمين */
+.ql-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.ql-badge {
+  padding: 3px 8px; border-radius: 999px; font-size: .72rem; font-weight: 800;
+  border: 1px solid rgba(99,102,241,.25);
+  background: rgba(99,102,241,.09);
+}
+.ql-cta {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 900; font-size: .82rem;
+  background: linear-gradient(90deg, #60a5fa, #22d3ee);
+  color: #08111f !important;
+  text-decoration: none !important;
+  box-shadow: 0 10px 22px rgba(34,211,238,.22);
+}
+.ql-cta:hover { transform: translateY(-1px); }
+
+/* لون مخصص لكل عنصر (اختياري) */
+.ql-item[data-tint="blue"]  .ql-icon { background: linear-gradient(135deg,#60a5fa,#22d3ee); }
+.ql-item[data-tint="green"] .ql-icon { background: linear-gradient(135deg,#34d399,#10b981); }
+.ql-item[data-tint="amber"] .ql-icon { background: linear-gradient(135deg,#fbbf24,#f59e0b); }
+.ql-item[data-tint="rose"]  .ql-icon { background: linear-gradient(135deg,#fb7185,#f43f5e); }
+</style>
+"""
+st.markdown(QUICK_LINKS_CSS, unsafe_allow_html=True)
+
+def render_quick_links(links: list[dict], title: str = "Quick Links"):
+    """
+    يرسم شبكة روابط احترافية.
+    كل عنصر في links عبارة عن dict بالمفاتيح:
+      - title: عنوان الرابط (إجباري)
+      - href:  رابط الوجهة (mailto:/https:/wa.me/...) (إجباري)
+      - icon:  نص الأيقونة (إيموجي/حرفين) (اختياري)
+      - sub:   وصف صغير/سطر توضيحي (اختياري)
+      - badges:[قائمة شارات] (اختياري)
+      - cta:   {"label": "...", "href": "..."} زر نداء (اختياري)
+      - tint:  "blue" | "green" | "amber" | "rose" للتلوين (اختياري)
+    """
+    st.markdown(f"<div class='ql-card'><div class='label'>{title}</div>", unsafe_allow_html=True)
+    html = ["<div class='ql-grid'>"]
+    for it in links:
+        title = it.get("title","").strip()
+        href  = it.get("href","#").strip()
+        icon  = it.get("icon","🔗")
+        sub   = it.get("sub","").strip()
+        badges= it.get("badges",[]) or []
+        tint  = it.get("tint","blue")
+        cta   = it.get("cta")
+
+        # بناء HTML للعنصر
+        line  = [f"<a class='ql-item' data-tint='{tint}' href='{href}' target='_blank' rel='noopener'>"]
+        line += [f"<div class='ql-icon'>{icon}</div>"]
+        line += ["<div class='ql-body'>"]
+        line += [f"<div class='ql-title'>{title}</div>"]
+        if sub:
+            line += [f"<div class='ql-sub'>{sub}</div>"]
+
+        # الشارات (إن وُجدت)
+        if badges:
+            bs = "".join([f"<span class='ql-badge'>{b}</span>" for b in badges])
+            line += [f"<div class='ql-badges' style='margin-top:6px;'>{bs}</div>"]
+
+        # زر CTA اختياري
+        if cta and cta.get("label") and cta.get("href"):
+            line += [f"<a class='ql-cta' href='{cta['href']}' target='_blank' rel='noopener'>{cta['label']}</a>"]
+
+        line += ["</div></a>"]  # close body + item
+        html.append("".join(line))
+    html.append("</div></div>")  # close grid + card
+    st.markdown("".join(html), unsafe_allow_html=True)
+
+# ---------------------------
+# بيانات الروابط (قابلة للتبديل)
+# ---------------------------
+QUICK_LINKS_DATA = [
+    {
+        "title": "EUROSWEET Catalog",
+        "sub": "منتجات / كتالوج رسمي",
+        "href": "https://eurosweet.com.tr",
+        "icon": "📘",
+        "tint": "blue",
+        "badges": ["Official", "Public"],
+        "cta": {"label": "Open Catalog ↗", "href": "https://eurosweet.com.tr"}
+    },
+    {
+        "title": "Contact Developer",
+        "sub": "تواصل مع كريم — استفسارات ودعم",
+        "href": "mailto:karim.amsha@gmail.com",
+        "icon": "✉️",
+        "tint": "green",
+        "badges": ["Support"],
+        "cta": {"label": "Email Now", "href": "mailto:karim.amsha@gmail.com"}
+    },
+    {
+        "title": "WhatsApp Support",
+        "sub": "تواصل عبر واتساب لطلبات عاجلة",
+        "href": "https://wa.me/201111223344",
+        "icon": "💬",
+        "tint": "amber",
+        "badges": ["Fast", "Direct"],
+        "cta": {"label": "Open WhatsApp", "href": "https://wa.me/201111223344"}
+    },
+    {
+        "title": "Changelog",
+        "sub": "آخر الميزات: Responsive + One-click Copy",
+        "href": "https://eurosweet.com.tr/#updates",
+        "icon": "🚀",
+        "tint": "rose",
+        "badges": ["Updated"],
+        "cta": {"label": "View Updates", "href": "https://eurosweet.com.tr/#updates"}
+    },
+    # أمثلة إضافية جاهزة للتفعيل لاحقًا:
+    # {
+    #   "title": "Privacy Policy",
+    #   "sub": "سياسة الخصوصية للتطبيق",
+    #   "href": "https://yourdomain.com/privacy",
+    #   "icon": "🔒",
+    #   "tint": "blue",
+    # },
+    # {
+    #   "title": "GitHub Repo",
+    #   "sub": "المصدر والـIssues",
+    #   "href": "https://github.com/your/repo",
+    #   "icon": "🧩",
+    #   "tint": "green",
+    # },
+]
+
+# ===========================
+# الاستدعاء داخل عمود Quick Links
+# ===========================
+# في مكان colR استبدل البلوك الحالي بهذا:
+# with colR:
+#     render_quick_links(QUICK_LINKS_DATA, title="Quick Links")
 
 # -----------------------------------
 # 9.3) Center Column: Core Workflow
