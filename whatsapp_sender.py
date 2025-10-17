@@ -9,8 +9,8 @@ from io import StringIO
 # KARIM | WhatsApp Sender PRO — Revamped (2025)
 # =============================================
 # ✔ يحافظ على كل الميزات القديمة
-# ✔ يعيد الهيكلة + واجهة احترافية جديدة (Glass / Dark & Light)
-# ✔ يضيف ميزات جديدة بدون كسر أي شيء قديم
+# ✔ هيكلة أوضح + واجهة احترافية (Glass / Dark & Light)
+# ✔ ميزات إضافية بدون حذف شيء
 # ---------------------------------------------
 # الميزات:
 # - Simple Mode: لصق أرقام / تنظيف / نسخ / تنزيل
@@ -163,15 +163,18 @@ def copy_to_clipboard(label: str, content: str):
         unsafe_allow_html=True,
     )
 
-def download_bytes(name: str, text: str):
+def download_bytes(name: str, text: str, key: str | None = None):
+    # مفتاح فريد لتجنّب StreamlitDuplicateElementId في حال تكرر نفس الـlabel
+    key = key or f"dl-{name}-{abs(hash(text))}"
     st.download_button(
-        f"⬇️ Download {name}",
+        label=f"⬇️ Download {name}",
         data=text.encode("utf-8"),
         file_name=name,
         mime="text/plain",
+        key=key,
     )
 
-# ============ Theme & Style ============
+# ============ Theme & Defaults ============
 if "theme_dark" not in st.session_state:
     st.session_state.theme_dark = True
 if "min_length" not in st.session_state:
@@ -251,7 +254,13 @@ with st.sidebar:
             "skipped": list(st.session_state.get("skipped", set())),
             "tpl": st.session_state.get("tpl", ""),
         }
-        st.download_button("⬇️ Download session.json", data=json.dumps(payload, ensure_ascii=False, indent=2), file_name="session.json")
+        st.download_button(
+            "⬇️ Download session.json",
+            data=json.dumps(payload, ensure_ascii=False, indent=2),
+            file_name="session.json",
+            mime="application/json",
+            key="dl-session-json"
+        )
     up = st.file_uploader("Import session.json", type=["json"], key="sessu")
     if up is not None:
         try:
@@ -286,7 +295,7 @@ with colL:
     st.markdown("<span class='label'>Bulk Tools</span>", unsafe_allow_html=True)
     last_numbers = st.session_state.get("numbers", []) or st.session_state.get("last_numbers", [])
     if last_numbers:
-        download_bytes("clean_numbers.txt", "\n".join(last_numbers))
+        download_bytes("clean_numbers.txt", "\n".join(last_numbers), key="dl-clean-left")
         copy_to_clipboard("Copy All Numbers", "\n".join(last_numbers))
     else:
         st.info("Clean numbers will appear here after filtering.")
@@ -295,11 +304,13 @@ with colL:
     total = len(st.session_state.get("numbers", []))
     skipped = len(st.session_state.get("skipped", set()))
     done = min(st.session_state.get("current", 0), total)
-    st.markdown("<div class='stats'>" \
-                f"<div class='stat'><b>Total</b><br>{total}</div>" \
-                f"<div class='stat'><b>Done</b><br>{done}</div>" \
-                f"<div class='stat'><b>Skipped</b><br>{skipped}</div>" \
-                "</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div class='stats'>"
+        f"<div class='stat'><b>Total</b><br>{total}</div>"
+        f"<div class='stat'><b>Done</b><br>{done}</div>"
+        f"<div class='stat'><b>Skipped</b><br>{skipped}</div>"
+        "</div>", unsafe_allow_html=True
+    )
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---- Right: Links / Info ----
@@ -329,7 +340,8 @@ with colC:
     if mode.startswith("Simple"):
         lang_label = st.radio("Language", list(LANG_CHOICES.keys()), horizontal=True)
         lang_code = LANG_CHOICES[lang_label]
-        st.session_state.tpl = LANG_TEMPLATES[lang_code]
+        tpl_simple = LANG_TEMPLATES[lang_code]
+        st.session_state.tpl = tpl_simple
 
         raw = st.text_area("Numbers (comma/newline/any format)", placeholder="Paste numbers like: +254 722 206312, 201111223344, ...", height=120)
         extracted = extract_numbers(raw)
@@ -353,12 +365,17 @@ with colC:
             st.subheader("Filtered Numbers")
             st.code("\n".join(numbers), language="text")
             copy_to_clipboard("Copy Filtered Numbers", "\n".join(numbers))
-            download_bytes("clean_numbers.txt", "\n".join(numbers))
+            download_bytes("clean_numbers.txt", "\n".join(numbers), key="dl-clean-center")
 
     # ===== Smart Mode =====
     else:
         st.info("Upload CSV/Excel or enter data manually. Columns: number, name, country")
-        st.download_button("⬇️ Download example CSV", data="number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n", file_name="example_contacts.csv")
+        st.download_button(
+            "⬇️ Download example CSV",
+            data="number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n",
+            file_name="example_contacts.csv",
+            key="dl-example-csv"
+        )
         how = st.radio("Input method", ["Upload CSV/Excel", "Manual editor"], horizontal=True)
         df = None
 
@@ -429,10 +446,10 @@ with colC:
             st.code("\n\n---\n".join(previews), language="text")
 
             msgs = [format_message(tpl, (names[i] if i < len(names) else ""), (countries[i] if i < len(countries) else ""), numbers[i], i+1) for i in range(len(numbers))]
-            download_bytes("whatsapp_messages.txt", "\n\n".join(msgs))
+            download_bytes("whatsapp_messages.txt", "\n\n".join(msgs), key="dl-msgs-txt")
             csv_buf = StringIO()
             pd.DataFrame({"number": numbers, "name": names, "country": countries, "message": msgs}).to_csv(csv_buf, index=False)
-            st.download_button("⬇️ Export messages.csv", data=csv_buf.getvalue(), file_name="messages.csv", mime="text/csv")
+            st.download_button("⬇️ Export messages.csv", data=csv_buf.getvalue(), file_name="messages.csv", mime="text/csv", key="dl-msgs-csv")
 
     # ===== Progress + Sending =====
     if "current" not in st.session_state:
@@ -476,7 +493,17 @@ with colC:
         contact_info = f"{numbers[idx]}" + (f" — {names[idx]}" if idx < len(names) and names[idx] else "") + (f" — {countries[idx]}" if idx < len(countries) and countries[idx] else "")
         st.markdown(f"<div class='badge' style='margin:8px 0;'>{contact_info}</div>", unsafe_allow_html=True)
 
-        st.markdown("<div class='klist'>" + "".join([f"<div class='kitem {'active' if i==idx else ''}'>{i+1}. {numbers[i]}" + (f" - {names[i]}" if i < len(names) and names[i] else "") + (f" - {countries[i]}" if i < len(countries) and countries[i] else "") + "</div>" for i in range(len(numbers))]) + "</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='klist'>" +
+            "".join([
+                f"<div class='kitem {'active' if i==idx else ''}'>{i+1}. {numbers[i]}"
+                + (f" - {names[i]}" if i < len(names) and names[i] else "")
+                + (f" - {countries[i]}" if i < len(countries) and countries[i] else "")
+                + "</div>"
+                for i in range(len(numbers))
+            ]) +
+            "</div>", unsafe_allow_html=True
+        )
 
         c1, c2, c3, c4, c5 = st.columns([1.2, 1.2, 1.2, 1.8, 1.2])
 
