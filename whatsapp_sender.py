@@ -1,22 +1,22 @@
 # =============================================================================
 # KARIM | WhatsApp Sender PRO — Revamped (2025)
 # =============================================================================
-# هذا الملف يقدّم أداة إرسال رسائل واتساب شبه-جماعية مع واجهة Streamlit محسّنة.
+# هذا الملف يقدّم أداة إرسال رسائل واتساب شبه-جماعية عبر Streamlit بواجهة احترافية.
 # يحافظ على كل ميزات الكود الأصلي ويضيف:
-# - هيدر احترافي (Glass + Animated Gradient)
+# - هيدر احترافي (Glass + Animated Gradient) + شارات الحالة
 # - ثيم داكن/فاتح + CSS مُهيكل
-# - بنية شيفرة أوضح + تعليقات تفصيلية
-# - تصدير/استيراد جلسة (Session Export/Import)
+# - Quick Links احترافية (Grid + Badges + CTA)
+# - تصدير/استيراد الجلسة (Session Export/Import)
 # - إزالة تكرارات، حد أدنى لطول الرقم، كود دولة افتراضي
 # - أوضاع Simple و Smart (CSV/Excel/Data Editor)
 # - قوالب رسائل مع متغيرات {name}, {country}, {number}, {idx}
 # - فتح واتساب (Web/App) لكل جهة اتصال
-# - شريط تقدم + Prev/Next/Skip/Jump
-# - تنزيل ملفات TXT/CSV للنتائج أو الرسائل
+# - شريط تقدّم + Prev/Next/Skip/Jump
+# - تنزيل TXT/CSV للأرقام والرسائل
 #
-# ملاحظات:
-# - تم الاهتمام بتوليد مفاتيح (key=) فريدة لعناصر التحميل لتجنّب StreamlitDuplicateElementId
-# - جميع الأجزاء موثقة بعناوين واضحة لتسهيل الرجوع والتعديل
+# نقاط مهمة:
+# - معالجة مشكلة StreamlitDuplicateElementId عبر مفاتيح فريدة للأزرار والعمليات.
+# - كل جزء موثّق لتعقبّله وتعديله بسهولة لاحقًا.
 # =============================================================================
 
 # =========================
@@ -28,13 +28,11 @@ import urllib.parse
 import re
 import json
 from io import StringIO
+from uuid import uuid4  # لمفاتيح فريدة لعناصر Streamlit
 
 # ================================
 # 2) Page Config / إعدادات الصفحة
 # ================================
-# - ترويسة الصفحة (title)
-# - عرض الصفحة (wide)
-# - حالة الشريط الجانبي
 st.set_page_config(
     page_title="KARIM | WhatsApp Sender PRO",
     layout="wide",
@@ -45,7 +43,7 @@ st.set_page_config(
 # 3) Constants / Templates / الإعدادات الثابتة
 # ============================================
 
-# نمط المتغيرات المسموح استخدامها داخل القوالب
+# نمط المتغيرات المسموح بها داخل القوالب
 VAR_PATTERN = re.compile(r"\{(name|country|number|idx)\}")
 
 # قوالب جاهزة لكل لغة (يمكن التعديل والإضافة)
@@ -144,9 +142,10 @@ def extract_numbers(text: str) -> list[str]:
         return []
     lines = text.replace(",", "\n").splitlines()
     out = []
+    min_len = st.session_state.get("min_length", 8)
     for line in lines:
-        digits = re.sub(r"\D", "", line)  # أزل كل ما ليس رقماً
-        if len(digits) >= st.session_state.get("min_length", 8):
+        digits = re.sub(r"\D", "", line or "")
+        if len(digits) >= min_len:
             out.append(digits)
     return out
 
@@ -158,7 +157,7 @@ def clean_number(n: str) -> str:
 
 def to_e164(num: str, default_cc: str) -> str:
     """
-    تحويل مبسّط نحو شكل E.164:
+    تحويل مبسّط نحو شكل E.164 (مناسب لروابط واتساب):
     - إن لم يبدأ الرقم بكود دولي، أضف الكود الافتراضي default_cc.
     - لا يضيف '+'، يكتفي بضم الكود والرقم (يناسب لينك whatsapp).
     - مثال: default_cc='20' و num='0111122334' -> '200111122334'
@@ -181,20 +180,26 @@ def format_message(tpl: str, name: str, country: str, number: str, idx: int) -> 
 
 def copy_to_clipboard(label: str, content: str):
     """
-    زر نسخ لل Clipboard باستخدام HTML/JS مضمّن.
-    مهم: لا يستخدم st.button حتى لا يصير تضارب مفاتيح.
+    زر نسخ للClipboard باستخدام HTML/JS مضمّن.
+    - لا يستخدم st.button حتى لا يحدث تضارب مفاتيح.
+    - مناسب لنسخ القوائم الكبيرة (الأرقام/الرسائل).
     """
-    btn_id = f"copy_{abs(hash(label+content))}"
+    btn_id = f"copy_{uuid4().hex}"
     st.markdown(
         f"""
-        <button id="{btn_id}" style="background:linear-gradient(90deg,#22d3ee,#06b6d4);border:none;border-radius:10px;padding:8px 16px;color:#0b1220;font-weight:800;cursor:pointer;box-shadow:0 6px 18px #06b6d433;margin:4px 0;">{label}</button>
+        <button id="{btn_id}" style="background:linear-gradient(90deg,#22d3ee,#06b6d4);
+                border:none;border-radius:10px;padding:8px 16px;color:#0b1220;
+                font-weight:800;cursor:pointer;box-shadow:0 6px 18px #06b6d433;margin:4px 0;">
+            {label}
+        </button>
         <script>
-        const el_{btn_id} = document.getElementById('{btn_id}');
-        if (el_{btn_id}) {{
-            el_{btn_id}.onclick = () => {{
+        const el = document.getElementById('{btn_id}');
+        if (el) {{
+            el.onclick = () => {{
                 navigator.clipboard.writeText({json.dumps(content)});
-                el_{btn_id}.innerText = 'Copied!';
-                setTimeout(()=> el_{btn_id}.innerText = {json.dumps(label)}, 1100);
+                const old = el.innerText;
+                el.innerText = 'Copied!';
+                setTimeout(()=> el.innerText = old, 1100);
             }}
         }}
         </script>
@@ -202,25 +207,24 @@ def copy_to_clipboard(label: str, content: str):
         unsafe_allow_html=True,
     )
 
-def download_bytes(name: str, text: str, key: str | None = None):
+def download_bytes(name: str, text: str, key: str | None = None, mime: str = "text/plain"):
     """
     زر تنزيل ملف نصّي آمن من ناحية تكرار المفاتيح:
     - إذا كان هناك زرين بنفس الـlabel داخل الصفحة، يجب توفير key فريد.
     - إن لم يمرّر key، سيتم توليده تلقائياً من اسم الملف ومحتواه.
     """
-    key = key or f"dl-{name}-{abs(hash(text))}"
+    key = key or f"dl-{name}-{uuid4().hex}"
     st.download_button(
         label=f"⬇️ Download {name}",
-        data=text.encode("utf-8"),
+        data=text.encode("utf-8") if isinstance(text, str) else text,
         file_name=name,
-        mime="text/plain",
+        mime=mime,
         key=key,
     )
 
 # ======================================
 # 5) Theme Defaults / الثيم والقيم الأولية
 # ======================================
-# تهيئة قيم session_state الافتراضية إذا لم تكن موجودة مسبقاً
 if "theme_dark" not in st.session_state:
     st.session_state.theme_dark = True
 if "min_length" not in st.session_state:
@@ -231,11 +235,22 @@ if "default_cc" not in st.session_state:
     st.session_state.default_cc = ""
 if "rate_ms" not in st.session_state:
     st.session_state.rate_ms = 0
+if "numbers" not in st.session_state:
+    st.session_state.numbers = []
+if "names" not in st.session_state:
+    st.session_state.names = []
+if "countries" not in st.session_state:
+    st.session_state.countries = []
+if "current" not in st.session_state:
+    st.session_state.current = 0
+if "skipped" not in st.session_state:
+    st.session_state.skipped = set()
+if "tpl" not in st.session_state:
+    st.session_state.tpl = LANG_TEMPLATES["en"]
 
 # ==========================
 # 6) CSS Themes / أنماط CSS
 # ==========================
-# ثيمين: داكن وفاتح — يمكن التبديل من الشريط الجانبي
 DARK_CSS = """
 <style>
 :root{--bg:#0b0f19;--bg2:#0f172a;--card:rgba(255,255,255,.05);--cardb:rgba(255,255,255,.1);--tx:#e5e9f0;--mut:#9fb2c8;--cy1:#22d3ee;--cy2:#06b6d4;--bl:#60a5fa;}
@@ -279,13 +294,12 @@ input:focus,textarea:focus{border:2px solid #38bdf8!important;background:#fff!im
 </style>
 """
 
-# حقن الـCSS حسب الثيم الحالي
+# حقن CSS حسب الثيم الحالي
 st.markdown(DARK_CSS if st.session_state.theme_dark else LIGHT_CSS, unsafe_allow_html=True)
 
 # ======================================================
 # 7) Header Component (Pro) / الهيدر الاحترافي المتحرك
 # ======================================================
-# CSS خاص بالهيدر الاحترافي (Glass + Animated Gradient Border)
 HEADER_CSS = """
 <style>
 .pro-header {
@@ -419,198 +433,29 @@ def render_pro_header(
         unsafe_allow_html=True
     )
 
-# ===================================================
-# 8) Sidebar / الشريط الجانبي — إعدادات + جلسة
-# ===================================================
-with st.sidebar:
-    # عنوان جانبي بسيط (اختياري، لأن الهيدر الرئيسي موجود بالأعلى)
-    st.markdown("<div class='h1'>KARIM</div>", unsafe_allow_html=True)
-    st.markdown("<div class='h2'>WhatsApp Broadcast Sender</div>", unsafe_allow_html=True)
-
-    # تبديل الثيم
-    theme = st.toggle("🌗 Dark Mode", value=st.session_state.theme_dark, help="Switch theme")
-    st.session_state.theme_dark = theme
-
-    # إعدادات عامة — تؤثر على التنظيف والتطبيع
-    st.markdown("<span class='label'>Global Settings</span>", unsafe_allow_html=True)
-    st.session_state.default_cc = st.text_input(
-        "Default country code (e.g. 90, 971, 20)",
-        value=st.session_state.default_cc
-    )
-    st.session_state.min_length = st.number_input(
-        "Min phone length", min_value=6, max_value=16,
-        value=st.session_state.min_length, step=1
-    )
-    st.session_state.dedupe = st.checkbox(
-        "Remove duplicates", value=st.session_state.dedupe
-    )
-    st.session_state.rate_ms = st.number_input(
-        "Suggested delay between opens (ms)", min_value=0, max_value=10000,
-        value=st.session_state.rate_ms
-    )
-
-    # تصدير/استيراد جلسة لتسهيل الاستكمال لاحقاً
-    st.markdown("<span class='label'>Session</span>", unsafe_allow_html=True)
-    if st.button("💾 Export Session"):
-        payload = {
-            "numbers": st.session_state.get("numbers", []),
-            "names": st.session_state.get("names", []),
-            "countries": st.session_state.get("countries", []),
-            "current": st.session_state.get("current", 0),
-            "skipped": list(st.session_state.get("skipped", set())),
-            "tpl": st.session_state.get("tpl", ""),
-        }
-        st.download_button(
-            "⬇️ Download session.json",
-            data=json.dumps(payload, ensure_ascii=False, indent=2),
-            file_name="session.json",
-            mime="application/json",
-            key="dl-session-json"
-        )
-    up = st.file_uploader("Import session.json", type=["json"], key="sessu")
-    if up is not None:
-        try:
-            data = json.loads(up.read().decode("utf-8"))
-            # استعادة جميع القوائم والحالة
-            st.session_state.numbers = data.get("numbers", [])
-            st.session_state.names = data.get("names", [])
-            st.session_state.countries = data.get("countries", [])
-            st.session_state.current = int(data.get("current", 0))
-            st.session_state.skipped = set(data.get("skipped", []))
-            st.session_state.tpl = data.get("tpl", "")
-            st.success("Session imported.")
-        except Exception as e:
-            st.error(f"Failed to import session: {e}")
-
-# عرض الهيدر الاحترافي أعلى الواجهة الرئيسية
-render_pro_header(
-    title="K A R I M",
-    subtitle="WhatsApp Sender PRO — Revamped",
-    chips=["Bulk Sender", "CSV/Excel", "Templates", "Progress Control"]
-)
-
-# ===========================================================
-# 9) Main Layout (3 Columns) / الواجهة الأساسية ثلاث أعمدة
-# ===========================================================
-colL, colC, colR = st.columns([1.05, 2.4, 1.05])
-
-with colR:
-    render_quick_links(QUICK_LINKS_DATA, title="Quick Links")
-
-# -----------------------------------
-# 9.1) Left Column: Tools + Stats
-# -----------------------------------
-with colL:
-    st.markdown("<div class='card' style='padding:12px;'>", unsafe_allow_html=True)
-
-    # أدوات سريعة: تنزيل الأرقام النظيفة + نسخها
-    st.markdown("<span class='label'>Bulk Tools</span>", unsafe_allow_html=True)
-    last_numbers = st.session_state.get("numbers", []) or st.session_state.get("last_numbers", [])
-    if last_numbers:
-        download_bytes("clean_numbers.txt", "\n".join(last_numbers), key="dl-clean-left")
-        copy_to_clipboard("Copy All Numbers", "\n".join(last_numbers))
-    else:
-        st.info("Clean numbers will appear here after filtering.")
-
-    # إحصائيات صغيرة لحالة التقدم
-    st.markdown("<span class='label'>Stats</span>", unsafe_allow_html=True)
-    total = len(st.session_state.get("numbers", []))
-    skipped = len(st.session_state.get("skipped", set()))
-    done = min(st.session_state.get("current", 0), total)
-    st.markdown(
-        "<div class='stats'>"
-        f"<div class='stat'><b>Total</b><br>{total}</div>"
-        f"<div class='stat'><b>Done</b><br>{done}</div>"
-        f"<div class='stat'><b>Skipped</b><br>{skipped}</div>"
-        "</div>", unsafe_allow_html=True
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
-
 # ===============================
-# Quick Links (Pro) — UI & Logic
+# 8) Quick Links — CSS + Renderer
 # ===============================
-# ضع هذا القسم مرة واحدة (مثلاً بعد أقسام الـCSS العامة وقبل بناء الأعمدة)
 QUICK_LINKS_CSS = """
 <style>
-/* حاوية الروابط الاحترافية */
-.ql-card {
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid var(--cardb, #e6eef8);
-  background: var(--card, #fff);
-  box-shadow: 0 7px 27px rgba(36,44,76,.11), 0 1px 5px #00000010;
-}
-.ql-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-@media (min-width: 520px) {
-  .ql-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* عنصر الرابط */
-.ql-item {
-  position: relative;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid var(--cardb, #e6eef8);
-  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
-  cursor: pointer;
-  text-decoration: none !important;
-  color: inherit !important;
-  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-}
-.dark .ql-item { background: rgba(255,255,255,.05); }
-.ql-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(14,165,233,.16);
-  border-color: rgba(14,165,233,.35);
-}
-
-/* أيقونة يسار العنوان */
-.ql-icon {
-  width: 38px; height: 38px; min-width: 38px;
-  border-radius: 11px;
-  display: grid; place-items: center;
-  font-size: 18px; font-weight: 900;
-  color: #07111f;
-  background: linear-gradient(135deg, #38bdf8, #22d3ee);
-  box-shadow: 0 10px 22px rgba(56,189,248,.28);
-  user-select: none;
-}
-.ql-body { flex: 1; line-height: 1.25; }
-.ql-title { font-weight: 900; font-size: .98rem; margin: 0; }
-.ql-sub   { font-size: .84rem; opacity: .85; margin-top: 2px; }
-
-/* شارات صغيرة يمين */
-.ql-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.ql-badge {
-  padding: 3px 8px; border-radius: 999px; font-size: .72rem; font-weight: 800;
-  border: 1px solid rgba(99,102,241,.25);
-  background: rgba(99,102,241,.09);
-}
-.ql-cta {
-  margin-top: 8px;
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 10px;
-  font-weight: 900; font-size: .82rem;
-  background: linear-gradient(90deg, #60a5fa, #22d3ee);
-  color: #08111f !important;
-  text-decoration: none !important;
-  box-shadow: 0 10px 22px rgba(34,211,238,.22);
-}
-.ql-cta:hover { transform: translateY(-1px); }
-
-/* لون مخصص لكل عنصر (اختياري) */
-.ql-item[data-tint="blue"]  .ql-icon { background: linear-gradient(135deg,#60a5fa,#22d3ee); }
-.ql-item[data-tint="green"] .ql-icon { background: linear-gradient(135deg,#34d399,#10b981); }
-.ql-item[data-tint="amber"] .ql-icon { background: linear-gradient(135deg,#fbbf24,#f59e0b); }
-.ql-item[data-tint="rose"]  .ql-icon { background: linear-gradient(135deg,#fb7185,#f43f5e); }
+.ql-card{padding:14px;border-radius:16px;border:1px solid var(--cardb, #e6eef8);background:var(--card, #fff);box-shadow:0 7px 27px rgba(36,44,76,.11),0 1px 5px #00000010}
+.ql-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:520px){.ql-grid{grid-template-columns:1fr 1fr}}
+.ql-item{position:relative;display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;border:1px solid var(--cardb, #e6eef8);background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.55));cursor:pointer;text-decoration:none!important;color:inherit!important;transition:transform .12s,box-shadow .12s,border-color .12s}
+.dark .ql-item{background:rgba(255,255,255,.05)}
+.ql-item:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(14,165,233,.16);border-color:rgba(14,165,233,.35)}
+.ql-icon{width:38px;height:38px;min-width:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;font-weight:900;color:#07111f;background:linear-gradient(135deg,#60a5fa,#22d3ee);box-shadow:0 10px 22px rgba(56,189,248,.28);user-select:none}
+.ql-body{flex:1;line-height:1.25}
+.ql-title{font-weight:900;font-size:.98rem;margin:0}
+.ql-sub{font-size:.84rem;opacity:.85;margin-top:2px}
+.ql-badges{display:flex;gap:6px;flex-wrap:wrap}
+.ql-badge{padding:3px 8px;border-radius:999px;font-size:.72rem;font-weight:800;border:1px solid rgba(99,102,241,.25);background:rgba(99,102,241,.09)}
+.ql-cta{margin-top:8px;display:inline-block;padding:6px 10px;border-radius:10px;font-weight:900;font-size:.82rem;background:linear-gradient(90deg,#60a5fa,#22d3ee);color:#08111f!important;text-decoration:none!important;box-shadow:0 10px 22px rgba(34,211,238,.22)}
+.ql-cta:hover{transform:translateY(-1px)}
+.ql-item[data-tint="blue"]  .ql-icon{background:linear-gradient(135deg,#60a5fa,#22d3ee)}
+.ql-item[data-tint="green"] .ql-icon{background:linear-gradient(135deg,#34d399,#10b981)}
+.ql-item[data-tint="amber"] .ql-icon{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.ql-item[data-tint="rose"]  .ql-icon{background:linear-gradient(135deg,#fb7185,#f43f5e)}
 </style>
 """
 st.markdown(QUICK_LINKS_CSS, unsafe_allow_html=True)
@@ -630,7 +475,7 @@ def render_quick_links(links: list[dict], title: str = "Quick Links"):
     st.markdown(f"<div class='ql-card'><div class='label'>{title}</div>", unsafe_allow_html=True)
     html = ["<div class='ql-grid'>"]
     for it in links:
-        title = it.get("title","").strip()
+        t = it.get("title","").strip()
         href  = it.get("href","#").strip()
         icon  = it.get("icon","🔗")
         sub   = it.get("sub","").strip()
@@ -638,26 +483,20 @@ def render_quick_links(links: list[dict], title: str = "Quick Links"):
         tint  = it.get("tint","blue")
         cta   = it.get("cta")
 
-        # بناء HTML للعنصر
         line  = [f"<a class='ql-item' data-tint='{tint}' href='{href}' target='_blank' rel='noopener'>"]
         line += [f"<div class='ql-icon'>{icon}</div>"]
         line += ["<div class='ql-body'>"]
-        line += [f"<div class='ql-title'>{title}</div>"]
+        line += [f"<div class='ql-title'>{t}</div>"]
         if sub:
             line += [f"<div class='ql-sub'>{sub}</div>"]
-
-        # الشارات (إن وُجدت)
         if badges:
             bs = "".join([f"<span class='ql-badge'>{b}</span>" for b in badges])
             line += [f"<div class='ql-badges' style='margin-top:6px;'>{bs}</div>"]
-
-        # زر CTA اختياري
         if cta and cta.get("label") and cta.get("href"):
             line += [f"<a class='ql-cta' href='{cta['href']}' target='_blank' rel='noopener'>{cta['label']}</a>"]
-
-        line += ["</div></a>"]  # close body + item
+        line += ["</div></a>"]
         html.append("".join(line))
-    html.append("</div></div>")  # close grid + card
+    html.append("</div></div>")
     st.markdown("".join(html), unsafe_allow_html=True)
 
 # ---------------------------
@@ -700,64 +539,169 @@ QUICK_LINKS_DATA = [
         "badges": ["Updated"],
         "cta": {"label": "View Updates", "href": "https://eurosweet.com.tr/#updates"}
     },
-    # أمثلة إضافية جاهزة للتفعيل لاحقًا:
-    # {
-    #   "title": "Privacy Policy",
-    #   "sub": "سياسة الخصوصية للتطبيق",
-    #   "href": "https://yourdomain.com/privacy",
-    #   "icon": "🔒",
-    #   "tint": "blue",
-    # },
-    # {
-    #   "title": "GitHub Repo",
-    #   "sub": "المصدر والـIssues",
-    #   "href": "https://github.com/your/repo",
-    #   "icon": "🧩",
-    #   "tint": "green",
-    # },
 ]
 
+# ===================================================
+# 9) Sidebar / الشريط الجانبي — إعدادات + جلسة
+# ===================================================
+with st.sidebar:
+    st.markdown("<div class='h1'>KARIM</div>", unsafe_allow_html=True)
+    st.markdown("<div class='h2'>WhatsApp Broadcast Sender</div>", unsafe_allow_html=True)
+
+    # تبديل الثيم
+    theme = st.toggle("🌗 Dark Mode", value=st.session_state.theme_dark, help="Switch theme")
+    st.session_state.theme_dark = theme
+
+    # إعدادات عامة — تؤثر على التنظيف والتطبيع
+    st.markdown("<span class='label'>Global Settings</span>", unsafe_allow_html=True)
+    st.session_state.default_cc = st.text_input(
+        "Default country code (e.g. 90, 971, 20)",
+        value=st.session_state.default_cc
+    )
+    st.session_state.min_length = st.number_input(
+        "Min phone length", min_value=6, max_value=16,
+        value=st.session_state.min_length, step=1
+    )
+    st.session_state.dedupe = st.checkbox(
+        "Remove duplicates", value=st.session_state.dedupe
+    )
+    st.session_state.rate_ms = st.number_input(
+        "Suggested delay between opens (ms)", min_value=0, max_value=10000,
+        value=st.session_state.rate_ms
+    )
+
+    # تصدير/استيراد جلسة
+    st.markdown("<span class='label'>Session</span>", unsafe_allow_html=True)
+    if st.button("💾 Export Session", key="btn_export_session"):
+        payload = {
+            "numbers": st.session_state.get("numbers", []),
+            "names": st.session_state.get("names", []),
+            "countries": st.session_state.get("countries", []),
+            "current": st.session_state.get("current", 0),
+            "skipped": list(st.session_state.get("skipped", set())),
+            "tpl": st.session_state.get("tpl", ""),
+            "settings": {
+                "theme_dark": st.session_state.get("theme_dark", True),
+                "default_cc": st.session_state.get("default_cc", ""),
+                "min_length": st.session_state.get("min_length", 8),
+                "dedupe": st.session_state.get("dedupe", True),
+                "rate_ms": st.session_state.get("rate_ms", 0),
+            }
+        }
+        st.download_button(
+            "⬇️ Download session.json",
+            data=json.dumps(payload, ensure_ascii=False, indent=2),
+            file_name="session.json",
+            mime="application/json",
+            key="dl-session-json"
+        )
+
+    up = st.file_uploader("Import session.json", type=["json"], key="sessu")
+    if up is not None:
+        try:
+            data = json.loads(up.read().decode("utf-8"))
+            st.session_state.numbers = data.get("numbers", [])
+            st.session_state.names = data.get("names", [])
+            st.session_state.countries = data.get("countries", [])
+            st.session_state.current = int(data.get("current", 0))
+            st.session_state.skipped = set(data.get("skipped", []))
+            st.session_state.tpl = data.get("tpl", st.session_state.tpl)
+            for k, v in (data.get("settings") or {}).items():
+                st.session_state[k] = v
+            st.success("Session imported.")
+        except Exception as e:
+            st.error(f"Failed to import session: {e}")
+
+# ===========================================================
+# 10) Header (Pro)
+# ===========================================================
+render_pro_header(
+    title="K A R I M",
+    subtitle="WhatsApp Sender PRO — Revamped",
+    chips=["Bulk Sender", "CSV/Excel", "Templates", "Progress Control"]
+)
+
+# ===========================================================
+# 11) Main Layout (3 Columns)
+# ===========================================================
+colL, colC, colR = st.columns([1.05, 2.4, 1.05])
+
 # -----------------------------------
-# 9.3) Center Column: Core Workflow
+# 11.1) Right Column: Quick Links
+# -----------------------------------
+with colR:
+    render_quick_links(QUICK_LINKS_DATA, title="Quick Links")
+
+# -----------------------------------
+# 11.2) Left Column: Tools + Stats
+# -----------------------------------
+with colL:
+    st.markdown("<div class='card' style='padding:12px;'>", unsafe_allow_html=True)
+
+    # أدوات سريعة: تنزيل الأرقام النظيفة + نسخها
+    st.markdown("<span class='label'>Bulk Tools</span>", unsafe_allow_html=True)
+    last_numbers = st.session_state.get("numbers", []) or st.session_state.get("last_numbers", [])
+    if last_numbers:
+        download_bytes("clean_numbers.txt", "\n".join(last_numbers), key="dl-clean-left")
+        copy_to_clipboard("Copy All Numbers", "\n".join(last_numbers))
+    else:
+        st.info("Clean numbers will appear here after filtering.")
+
+    # إحصائيات صغيرة لحالة التقدم
+    st.markdown("<span class='label'>Stats</span>", unsafe_allow_html=True)
+    total = len(st.session_state.get("numbers", []))
+    skipped = len(st.session_state.get("skipped", set()))
+    done = min(st.session_state.get("current", 0), total)
+    st.markdown(
+        "<div class='stats'>"
+        f"<div class='stat'><b>Total</b><br>{total}</div>"
+        f"<div class='stat'><b>Done</b><br>{done}</div>"
+        f"<div class='stat'><b>Skipped</b><br>{skipped}</div>"
+        "</div>", unsafe_allow_html=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# -----------------------------------
+# 11.3) Center Column: Core Workflow
 # -----------------------------------
 with colC:
     st.markdown("<div class='card' style='padding:16px;'>", unsafe_allow_html=True)
 
     # اختيار الوضع: بسيط (أرقام فقط) / ذكي (أسماء + دولة)
     st.markdown("<span class='label'>Choose Mode</span>", unsafe_allow_html=True)
-    mode = st.radio("", ["Simple: Numbers Only", "Smart: Personalized (Name & Country)"] , horizontal=True)
+    mode = st.radio("", ["Simple: Numbers Only", "Smart: Personalized (Name & Country)"] , horizontal=True, key="mode_radio")
+
+    # منصة الإرسال (واتساب ويب أو تطبيق الموبايل)
+    platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="platform_radio")
+    platform_type = "web" if platform.startswith("💻") else "mobile"
 
     # احمل القوائم من الحالة (أو قيّم افتراضية)
     numbers: list[str] = st.session_state.get("numbers", []) or []
     names: list[str] = st.session_state.get("names", []) or []
     countries: list[str] = st.session_state.get("countries", []) or []
 
-    # اختيار منصة الإرسال (واتساب ويب أو تطبيق الموبايل)
-    platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True)
-    platform_type = "web" if platform.startswith("💻") else "mobile"
-
-    # =============== Simple Mode ===============
+    # =======================
+    # Simple Mode (Numbers)
+    # =======================
     if mode.startswith("Simple"):
-        # اختيار اللغة ثم تحميل القالب تلقائياً
-        lang_label = st.radio("Language", list(LANG_CHOICES.keys()), horizontal=True)
+        lang_label = st.radio("Language", list(LANG_CHOICES.keys()), horizontal=True, key="lang_radio")
         lang_code = LANG_CHOICES[lang_label]
         tpl_simple = LANG_TEMPLATES[lang_code]
         st.session_state.tpl = tpl_simple
 
-        # إدخال الأرقام الخام (أي صيغة)
+        # إدخال الأرقام الخام
         raw = st.text_area(
             "Numbers (comma/newline/any format)",
             placeholder="Paste numbers like: +254 722 206312, 201111223344, ...",
-            height=120
+            height=120,
+            key="numbers_raw"
         )
 
-        # استخراج الأرقام وتنظيفها + إضافة كود الدولة الافتراضي إن لزم
+        # استخراج وتنظيف وتطبيع الأرقام
         extracted = extract_numbers(raw)
         default_cc = st.session_state.default_cc or ""
         normalized = [to_e164(n, default_cc) for n in extracted]
         normalized = [n for n in normalized if len(n) >= st.session_state.min_length]
-
-        # إزالة التكرارات مع الحفاظ على الترتيب
         if st.session_state.dedupe:
             normalized = list(dict.fromkeys(normalized))
 
@@ -765,22 +709,22 @@ with colC:
         numbers = normalized
         names = [""] * len(numbers)
         countries = [""] * len(numbers)
-
         st.session_state.last_numbers = numbers
         st.session_state.numbers = numbers
         st.session_state.names = names
         st.session_state.countries = countries
 
-        # عرض النتائج + أزرار النسخ/التنزيل
+        # عرض النتائج + أدوات النسخ/التحميل
         if raw and numbers:
             st.subheader("Filtered Numbers")
             st.code("\n".join(numbers), language="text")
             copy_to_clipboard("Copy Filtered Numbers", "\n".join(numbers))
             download_bytes("clean_numbers.txt", "\n".join(numbers), key="dl-clean-center")
 
-    # =============== Smart Mode ===============
+    # =======================
+    # Smart Mode (CSV/Editor)
+    # =======================
     else:
-        # شرح بسيط + ملف CSV مثال
         st.info("Upload CSV/Excel or enter data manually. Columns: number, name, country")
         st.download_button(
             "⬇️ Download example CSV",
@@ -789,28 +733,23 @@ with colC:
             key="dl-example-csv"
         )
 
-        # طريقة الإدخال: رفع ملف أو محرر يدوي
-        how = st.radio("Input method", ["Upload CSV/Excel", "Manual editor"], horizontal=True)
+        how = st.radio("Input method", ["Upload CSV/Excel", "Manual editor"], horizontal=True, key="input_method")
         df = None
 
         if how.startswith("Upload"):
-            # رفع CSV أو Excel
-            up = st.file_uploader("Upload (CSV, XLSX, XLS)", type=["csv", "xlsx", "xls"])
+            up = st.file_uploader("Upload (CSV, XLSX, XLS)", type=["csv", "xlsx", "xls"], key="uploader")
             if up is not None:
                 try:
-                    # قراءة الملف
                     if up.name.lower().endswith(".csv"):
                         df = pd.read_csv(up)
                     else:
                         df = pd.read_excel(up)
 
-                    # اختيار أعمدة الأرقام/الاسم/الدولة
                     columns = list(df.columns)
-                    ncol = st.selectbox("Select number column", columns)
-                    name_col = st.selectbox("Select name column (optional)", [""] + columns)
-                    ctry_col = st.selectbox("Select country column (optional)", [""] + columns)
+                    ncol = st.selectbox("Select number column", columns, key="sel_ncol")
+                    name_col = st.selectbox("Select name column (optional)", [""] + columns, key="sel_namecol")
+                    ctry_col = st.selectbox("Select country column (optional)", [""] + columns, key="sel_ctrycol")
 
-                    # تنظيف وتطبيع الأرقام
                     df = df.dropna(subset=[ncol])
                     df[ncol] = df[ncol].astype(str).apply(clean_number)
                     df[ncol] = df[ncol].apply(lambda x: to_e164(x, st.session_state.default_cc))
@@ -819,7 +758,6 @@ with colC:
 
                     st.success(f"{len(df)} contacts loaded.")
 
-                    # استخراج القوائم من الأعمدة المختارة
                     numbers = df[ncol].tolist()
                     names = df[name_col].tolist() if name_col else [""] * len(df)
                     countries = df[ctry_col].tolist() if ctry_col else [""] * len(df)
@@ -829,16 +767,14 @@ with colC:
                     numbers, names, countries = [], [], []
 
         else:
-            # محرر يدوي بصفّين مثال
             example = pd.DataFrame({
                 "number": ["201111223344", "971500000001"],
                 "name": ["Mohamed", "Ahmed"],
                 "country": ["Egypt", "UAE"]
             })
-            df = st.data_editor(example, num_rows="dynamic", use_container_width=True)
+            df = st.data_editor(example, num_rows="dynamic", use_container_width=True, key="editor")
             if df is not None and not df.empty:
                 if "number" in df.columns:
-                    # تنظيف وتطبيع الأرقام
                     df["number"] = df["number"].astype(str).apply(clean_number)
                     df["number"] = df["number"].apply(lambda x: to_e164(x, st.session_state.default_cc))
                     df = df[df["number"].str.len() >= st.session_state.min_length]
@@ -854,7 +790,7 @@ with colC:
         st.session_state.countries = countries
         st.session_state.last_numbers = numbers
 
-        # حقل القالب الذكي (قابل للتعديل) + معاينة
+        # القالب الذكي (قابل للتعديل) + معاينة + تنزيل الرسائل
         st.markdown("<span class='label'>Message template</span>", unsafe_allow_html=True)
         default_tpl = (
             "Hello {name} 👋\n\n"
@@ -869,11 +805,11 @@ with colC:
         tpl = st.text_area(
             "Use {name}, {country}, {number}, {idx}",
             value=st.session_state.get("tpl", default_tpl),
-            height=220
+            height=220,
+            key="tpl_smart"
         )
         st.session_state.tpl = tpl
 
-        # معاينة أول 3 رسائل + تنزيل TXT/CSV للرسائل
         if numbers:
             st.markdown("**Variables:** `{" + "name,country,number,idx" + "}`")
             previews = []
@@ -889,7 +825,6 @@ with colC:
                 )
             st.code("\n\n---\n".join(previews), language="text")
 
-            # توليد الرسائل كاملة للتنزيل
             msgs = [
                 format_message(
                     tpl,
@@ -902,7 +837,6 @@ with colC:
             ]
             download_bytes("whatsapp_messages.txt", "\n\n".join(msgs), key="dl-msgs-txt")
 
-            # تصدير CSV يحوي (number, name, country, message)
             csv_buf = StringIO()
             pd.DataFrame({
                 "number": numbers,
@@ -919,20 +853,19 @@ with colC:
             )
 
     # ===================================
-    # 10) Progress + Open WhatsApp / التقدم والإرسال
+    # 12) Progress + Open WhatsApp
     # ===================================
-    # حالة المؤشر الحالي + مجموعة المتجاوزين
+    # تحضير الحالة
     if "current" not in st.session_state:
         st.session_state.current = 0
     if "skipped" not in st.session_state:
         st.session_state.skipped = set()
 
-    # تحديث نسخ محلية للعرض
     numbers = st.session_state.get("numbers", []) or []
     names = st.session_state.get("names", []) or []
     countries = st.session_state.get("countries", []) or []
 
-    # عداد دائري بسيط يوضح (العنصر الحالي/الإجمالي)
+    # عرض نسبة التقدّم الدائرية
     if numbers:
         percent = int((st.session_state.current + 1) / max(len(numbers),1) * 100)
         st.markdown(
@@ -941,7 +874,9 @@ with colC:
             <div style='margin-bottom:9px;'>
                 <div style='width:72px;height:72px;margin:auto;position:relative;'>
                     <div style='width:72px;height:72px;border-radius:50%;background:conic-gradient(#22d3ee {percent}%, rgba(127,127,127,.15) {percent}% 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px #22d3ee22;position:absolute;top:0;left:0;'>
-                        <span style='font-size:1.05rem;color:#051423;font-weight:900;letter-spacing:2px;'>{min(st.session_state.current+1,len(numbers))}/{len(numbers)}</span>
+                        <span style='font-size:1.05rem;color:#051423;font-weight:900;letter-spacing:2px;'>
+                            {min(st.session_state.current+1,len(numbers))}/{len(numbers)}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -949,16 +884,16 @@ with colC:
             unsafe_allow_html=True,
         )
 
-    # زر إعادة التقدم للصفر + تفريغ قائمة المتجاوزين
-    if st.button("🔄 Reset Progress"):
+    # زر إعادة التقدّم
+    if st.button("🔄 Reset Progress", key="btn_reset"):
         st.session_state.current = 0
         st.session_state.skipped = set()
 
+    # واجهة الإرسال
     if numbers:
         idx = st.session_state.current
         tpl = st.session_state.get("tpl", LANG_TEMPLATES.get("en", ""))
 
-        # توليد الرسالة للشخص الحالي
         try:
             msg_personal = format_message(
                 tpl,
@@ -970,16 +905,13 @@ with colC:
         except Exception:
             msg_personal = "⚠️ Please check your template or data"
 
-        # حقل تحرير الرسالة الخاصة بالعنصر الحالي (يمكن تعديلها قبل الإرسال)
-        message = st.text_area("Message", value=msg_personal, key="msgboxfinal", height=140)
+        message = st.text_area("Message", value=msg_personal, key=f"msgbox_{idx}", height=140)
 
-        # شارة تعرض معلومات جهة الاتصال الحالية
         contact_info = f"{numbers[idx]}" \
             + (f" — {names[idx]}" if idx < len(names) and names[idx] else "") \
             + (f" — {countries[idx]}" if idx < len(countries) and countries[idx] else "")
         st.markdown(f"<div class='badge' style='margin:8px 0;'>{contact_info}</div>", unsafe_allow_html=True)
 
-        # قائمة مصغّرة بكل الأرقام مع تمييز الحالي
         st.markdown(
             "<div class='klist'>" +
             "".join([
@@ -992,27 +924,26 @@ with colC:
             "</div>", unsafe_allow_html=True
         )
 
-        # أزرار التحكم: السابق/تجاوز/قفزة/فتح واتساب/التالي
         c1, c2, c3, c4, c5 = st.columns([1.2, 1.2, 1.2, 1.8, 1.2])
 
         # السابق
-        if c1.button("← Prev", disabled=(idx <= 0)):
+        if c1.button("← Prev", disabled=(idx <= 0), key=f"btn_prev_{idx}"):
             st.session_state.current = max(0, idx-1)
 
-        # تجاوز (Skip) — تُضاف للمجموعة skipped
+        # تجاوز (Skip)
         skip_disabled = (numbers[idx] in st.session_state.skipped)
-        if c2.button("Skip", disabled=skip_disabled):
+        if c2.button("Skip", disabled=skip_disabled, key=f"btn_skip_{idx}"):
             st.session_state.skipped.add(numbers[idx])
             if idx < len(numbers)-1:
                 st.session_state.current = idx+1
 
         # قفزة برقم index
-        jump_to = c3.number_input("Jump", min_value=1, max_value=max(len(numbers),1), value=idx+1, step=1)
-        if c3.button("Go"):
+        jump_to = c3.number_input("Jump", min_value=1, max_value=max(len(numbers),1), value=idx+1, step=1, key=f"jump_{idx}")
+        if c3.button("Go", key=f"btn_go_{idx}"):
             st.session_state.current = min(max(jump_to-1, 0), len(numbers)-1)
 
-        # فتح واتساب بالرابط المناسب (ويب/موبايل)
-        if c4.button("Open WhatsApp", disabled=(not message.strip())):
+        # فتح واتساب
+        if c4.button("Open WhatsApp", disabled=(not message.strip()), key=f"btn_open_{idx}"):
             msg_encoded = urllib.parse.quote(message.strip())
             num = numbers[idx]
             url = (
@@ -1024,18 +955,17 @@ with colC:
                 f"<div style='text-align:center;margin-top:6px;'><a href='{url}' target='_blank' style='font-weight:900;'>🚀 Click here if WhatsApp didn't open automatically</a></div>",
                 unsafe_allow_html=True
             )
-            # فتح تلقائي في نافذة جديدة
             st.components.v1.html(f"""<script>window.open('{url}', '_blank');</script>""")
 
         # التالي
-        if c5.button("Next →", disabled=(idx >= len(numbers)-1)):
+        if c5.button("Next →", disabled=(idx >= len(numbers)-1), key=f"btn_next_{idx}"):
             st.session_state.current = min(idx+1, len(numbers)-1)
 
     # نهاية الكارد المركزي
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =========================
-# 11) Footer / التذييل
+# 13) Footer / التذييل
 # =========================
 st.markdown(
     "<div style='text-align:center;margin:12px 0;opacity:.9;'>✦ Powered by <b>KARIM OTHMAN</b> © 2025</div>",
