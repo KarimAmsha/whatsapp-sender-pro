@@ -3,11 +3,20 @@ import pandas as pd
 import urllib.parse
 import re
 
+# ==========================
+# WhatsApp Sender PRO (Full)
+# ==========================
+# ملاحظة: يحافظ هذا الإصدار على كل الميزات الأصلية دون حذف أي شيء
+# (Simple + Smart modes، نسخ، تنزيل، تقدّم، فتح واتساب...)
+# مع تحسينات جمالية احترافية (Dark / Pure Black + Glass UI)
+
 st.set_page_config(
     page_title="KARIM | WhatsApp Sender PRO",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# ========== Helpers ==========
 
 def extract_numbers(text):
     lines = text.replace(",", "\n").splitlines()
@@ -18,20 +27,22 @@ def extract_numbers(text):
             numbers.append(digits)
     return numbers
 
+
 def clean_number(n):
     # استخرج كل الأرقام فقط (تحذف كل شيء آخر)
     digits = re.sub(r'\D', '', str(n))
     # لو الرقم طويل جدًا وبدايته صفر أو زائد، يمكن تخصصها حسب الدولة، لكن الأفضل فقط الأرقام
     return digits
 
+
 def copy_to_clipboard_code(content, label="Copy"):
     btn_id = "copybtn" + str(hash(content))
     st.markdown(f"""
     <button id="{btn_id}" style="
-        background:linear-gradient(90deg,#38bdf8,#2563eb);
-        border:none;border-radius:7px;padding:7px 19px;
-        color:#fff;font-size:1em;font-weight:700;
-        margin:8px 0;cursor:pointer;">{label}</button>
+        background:linear-gradient(90deg,#22d3ee,#06b6d4);
+        border:none;border-radius:10px;padding:9px 20px;
+        color:#0b1220;font-size:0.98em;font-weight:800;
+        margin:8px 0;cursor:pointer;box-shadow:0 6px 18px #06b6d433;">{label}</button>
     <script>
     document.getElementById('{btn_id}').onclick = function() {{
         navigator.clipboard.writeText({content!r});
@@ -41,6 +52,7 @@ def copy_to_clipboard_code(content, label="Copy"):
     </script>
     """, unsafe_allow_html=True)
 
+
 def guess_column(columns, possible_names):
     for name in possible_names:
         for col in columns:
@@ -48,7 +60,7 @@ def guess_column(columns, possible_names):
                 return col
     return None
 
-# أمثلة احتمالات شائعة
+# أمثلة احتمالات شائعة (احتياط)
 number_candidates = ['number', 'phone', 'mobile', 'whatsapp', 'contact', 'num', 'tel']
 name_candidates = ['name', 'full name', 'contact', 'person', 'client']
 country_candidates = ['country', 'nation', 'state', 'region']
@@ -70,7 +82,6 @@ Looking forward to your reply!
 
 Best regards,
 Sales Department""",
-    # ... نفس القيم للعربية والتركية والفرنسية والإسبانية (احفظها كما في كودك السابق)
     'ar': """مرحبًا 👋
 
 نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول - تركيا).
@@ -133,201 +144,107 @@ Saludos cordiales,
 Departamento de Ventas"""
 }
 
-# ==== CSS (Colors + Dashboard) ====
+# ========== THEME (Dark / Pure Black) ==========
+
 st.markdown("""
 <style>
+:root {
+  --bg-0: #0b0f19; /* pure-ish black */
+  --bg-1: #0f172a;
+  --bg-2: #0b1220;
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --text: #e5e9f0;
+  --muted: #94a3b8;
+  --brand-1: #22d3ee; /* cyan */
+  --brand-2: #06b6d4; /* darker cyan */
+  --accent: #60a5fa; /* blue */
+}
+
 /* خلفية عامة */
 .stApp {
-    background: linear-gradient(120deg, #f6fbff 85%, #e0e7ef 100%) fixed !important;
-    font-family: 'Inter', Arial, sans-serif !important;
-    font-size: 15px !important;
+  background: radial-gradient(1200px 700px at 15% -10%, #111827 10%, var(--bg-0) 45%, #000 100%) fixed !important;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  color: var(--text) !important;
 }
 .block-container {padding-top:18px; padding-bottom:12px;}
 
-/* الجانبين */
-.karim-sider, .karim-sider-right {
-    background: linear-gradient(120deg, #e3f0ff 80%, #f3f8ff 100%);
-    border-radius: 18px;
-    box-shadow: 0 6px 22px #38bdf81a;
-    padding: 17px 12px 12px 12px;
-    margin: 10px 0 10px 0;
-    min-width: 210px; max-width: 340px;
-    font-size: 0.97em;
-    color:#182244 !important;
+/* Glass Cards */
+.glass-box-main, .karim-sider, .karim-sider-right {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+  border: 1px solid var(--card-border);
 }
-.karim-sider .sider-title, .karim-sider-right .sider-title {
-    color: #1877f2; font-size: 1.10em; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 7px;
-}
-.karim-sider .sider-label, .karim-sider-right .sider-label {
-    color:#1565c0;font-size:1em;font-weight:700;
-}
-.karim-sider .sider-section, .karim-sider-right .sider-section {margin:8px 0;}
-.karim-sider .sider-logo, .karim-sider-right .sider-logo {text-align:center;margin:10px 0;}
-.karim-sider .sider-logo span, .karim-sider-right .sider-logo span {font-size:1.7em;}
-.karim-sider code, .karim-sider-right code {background:#222f3e;padding:2px 7px;border-radius:4px;font-size:.93em;color:#5eead4;}
+.glass-box-main {padding:26px 21px 25px 21px; margin:10px 0 20px 0; min-width:340px; max-width: 680px;}
+.karim-sider, .karim-sider-right {padding: 17px 12px 12px 12px; margin:10px 0; min-width:210px; max-width:340px;}
 
-/* Main glass box */
-.glass-box-main {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 7px 27px 0 rgba(36, 44, 76, 0.11), 0 1px 5px #38bdf810;
-    padding: 26px 21px 25px 21px;
-    margin: 10px 0 20px 0;
-    border: 1.2px solid #e3e9f8;
-    min-width: 340px; max-width: 620px;
-}
-
-/* شعار */
+/* Titles */
 .karim-logo {
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem; font-weight: 900; letter-spacing: 7px;
-    margin-bottom: 0.13em; text-align: center;
-    background: linear-gradient(90deg, #2563eb 45%, #38bdf8 70%, #22d3ee 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; text-fill-color: transparent;
-    user-select: none; text-shadow: 0 1px 10px #38bdf840;
+  font-size: 2.2rem; font-weight: 900; letter-spacing: 7px; text-align:center;
+  background: linear-gradient(90deg, var(--brand-1) 45%, #22d3ee 70%, #7dd3fc 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; text-fill-color: transparent; user-select:none;
+  text-shadow: 0 1px 16px #22d3ee38;
 }
-.subtitle-karim {
-    font-size:1.08rem;
-    text-align:center;
-    color:#2563eb;
-    font-weight:800;
-    margin-top:2px; margin-bottom:6px;
-    letter-spacing:1.2px;
-    font-family: 'Inter', sans-serif;
-}
+.subtitle-karim {font-size:1.02rem;text-align:center;color:#9cc9ff;font-weight:800; margin-top:2px; margin-bottom:6px;letter-spacing:1.2px;}
 
-/* Info Box */
-.karim-glass-info {
-    background: rgba(246, 250, 255, 0.82);
-    border-radius: 13px;
-    border: 1px solid #b6c7e2;
-    box-shadow: 0 2px 10px #38bdf812;
-    padding: 11px 15px 10px 15px;
-    margin: 13px 0 8px 0;
-    color: #174ca1;
-    font-size: 1.03em;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    letter-spacing: .03em;
-    text-align: center;
-    backdrop-filter: blur(2.1px);
-}
+/* Sider labels */
+.sider-title {color:#9cc9ff; font-size:1.02em; font-weight:900; letter-spacing:1.2px; margin-bottom:7px;}
+.sider-label  {color:#7dd3fc; font-size:1em; font-weight:800;}
+.karim-sider, .karim-sider-right {color:#dbeafe !important;}
+.karim-sider code, .karim-sider-right code {background:#0b1220;padding:2px 7px;border-radius:6px;font-size:.93em;color:#34d399;}
 
-/* عناوين المجموعات */
+/* Headings & labels */
 .stRadio > label, .stTextInput > label, .stTextArea > label, .stSelectbox > label, .stMarkdown h3 {
-    color: #2563eb !important;
-    font-weight: 800 !important;
-    font-size: 1.05em !important;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.12em !important;
-    margin-top: 0.5em !important;
-    display: block;
+  color: #a5b4fc !important; font-weight: 800 !important; font-size: 1.03em !important; letter-spacing: 0.06em;
 }
-/* تصغير المسافة بين العنوان وخيارات الراديو */
-.stRadio > div[role="radiogroup"] {margin-top: -0.7em !important; margin-bottom: 0.1em !important;}
+.stRadio > div[role="radiogroup"] {margin-top:-0.6em !important; margin-bottom: 0.1em !important;}
 .stRadio {margin-bottom: 0.2em !important;}
+.stRadio > div[role="radiogroup"] label, .stRadio > div[role="radiogroup"] span, .stRadio > div[role="radiogroup"] div {font-size: 0.94em !important; font-weight: 500 !important; color: #e5e9f0 !important;}
 
-/* تصغير حجم الخط وتخفيف الوزن لخانات الراديو والنصوص الفرعية */
-.stRadio > div[role="radiogroup"] label,
-.stRadio > div[role="radiogroup"] span,
-.stRadio > div[role="radiogroup"] div {
-    font-size: 0.91em !important;
-    font-weight: 500 !important;
-    color: #232a3d !important;
-}
-.stRadio > div[role="radiogroup"] * {font-weight: 500 !important; font-size: 0.91em !important;}
-.stRadio [data-baseweb="radio"] {font-weight: 500 !important; color: #232a3d !important;}
-
-/* مدخلات النص */
+/* Inputs */
 input, textarea, .stTextInput>div>input, .stTextArea>div>textarea {
-    border-radius: 9px !important;
-    background: #f4f8fb !important;
-    color: #17213d !important;
-    border: 1.5px solid #bcd0ee;
-    font-size: 1.02em;
-    font-weight:600;
-    box-shadow: 0 2px 7px #38bdf810;
-    transition: border .13s;
+  border-radius: 10px !important; background: #0b1220 !important; color: #e5e9f0 !important;
+  border: 1.6px solid #23314b; font-size: 1.02em; font-weight:600; box-shadow: 0 2px 7px #00000040; transition: border .13s, background .13s;
 }
-input:focus, textarea:focus {
-    border: 2px solid #38bdf8 !important;
-    background: #fff !important;
-    color: #1e293b !important;
-}
+input:focus, textarea:focus {border: 2px solid var(--brand-1) !important; background: #0f172a !important;}
 
-/* زرار */
+/* Buttons */
 .stButton>button {
-    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
-    border-radius: 9px !important;
-    color: #fff !important;
-    font-weight: bold;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.97em; letter-spacing:.1px;
-    box-shadow: 0 4px 16px #2563eb22;
-    border: none !important;
-    transition: box-shadow .13s, transform .11s, background .11s;
+  background: linear-gradient(90deg, var(--brand-2) 0%, var(--brand-1) 100%);
+  border-radius: 10px !important; color: #08111f !important; font-weight: 900; font-size: 0.96em; letter-spacing:.2px;
+  box-shadow: 0 10px 26px #06b6d433; border: none !important; transition: box-shadow .13s, transform .11s, background .11s;
 }
-.stButton>button:hover {
-    background: linear-gradient(90deg, #38bdf8 0%, #22d3ee 100%);
-    color: #fff !important;
-    box-shadow: 0 9px 20px #2563eb23;
-    transform: translateY(-1px) scale(1.03);
-}
-.stButton>button:active {
-    transform: scale(.97);
-    box-shadow: 0 1px 3px #2563eb10;
-}
+.stButton>button:hover {transform: translateY(-1px) scale(1.03); box-shadow: 0 16px 30px #06b6d445;}
+.stButton>button:active {transform: scale(.97); box-shadow: 0 1px 3px #00000030;}
 
-/* لائحة الأرقام */
-.numbers-list-karim {
-    display: flex; flex-direction: column; gap: 2px; font-size: 14.5px;
-    background: #f1f7fd; border-radius: 8px; padding: 6px 9px 6px 10px; margin-bottom: 11px;
-    max-height: 90px; overflow-y: auto; color: #2563eb;
-    border: 1px solid #e5eaf7;
-    box-shadow: 0 2px 7px #38bdf80f;
-    font-family: 'Inter', sans-serif;
-}
-.numbers-list-karim .active {
-    background: linear-gradient(90deg,#38bdf849 60%,#22d3ee80 100%);
-    border-radius: 7px; font-weight: bold; color: #fff;
-    font-size: 1em; border-left: 4px solid #2563eb; padding-left: 3px;
-    box-shadow: 0 2px 8px #22d3ee18;
-}
-/* اجعل نص st.info أغمق وواضح */
-.stAlert-info, .stAlert-info p, .stAlert-info span {
-    color: #174ca1 !important;  /* أزرق داكن */
-    font-weight: 700 !important;
-    font-size: 1.09em !important;
-    opacity: 1 !important;
-    text-shadow: none !important;
-}
+/* Numbers list */
+.numbers-list-karim {display:flex; flex-direction:column; gap:2px; font-size: 14.5px; background: #0b1220; border-radius: 10px; padding: 6px 9px; margin-bottom: 11px; max-height: 120px; overflow-y: auto; color:#cfe8ff; border: 1px solid #1f2b40; box-shadow: inset 0 0 0 1px #1a2436;}
+.numbers-list-karim .active {background: linear-gradient(90deg,#0ea5e980 0%,#22d3ee60 100%); border-radius: 8px; font-weight: 800; color: #051423; font-size: 1em; border-left: 4px solid #7dd3fc; padding-left: 6px; box-shadow: 0 2px 8px #22d3ee18;}
 
-/* الفوتر */
-.footer-karim {
-    margin-top: 1.3rem; font-size: 0.98rem; color: #2563eb;
-    text-align: center; letter-spacing: 1px;
-    font-family: 'Inter', sans-serif;
-    opacity: .98; font-weight: bold; padding-bottom: 10px;
-}
+/* Alert/info */
+.stAlert-info, .stAlert-info p, .stAlert-info span {color:#e5e9f0 !important; font-weight: 700 !important; font-size: 1.02em !important;}
 
-/* موبايل */
-@media (max-width:900px){
-    .glass-box-main{padding:4vw 1vw;min-width:unset;max-width:unset;}
-    .karim-sider,.karim-sider-right{padding:10px 5vw;}
-}
+/* Footer */
+.footer-karim {margin-top: 1.3rem; font-size: 0.98rem; color: #7dd3fc; text-align: center; letter-spacing: 1px; opacity: .95; font-weight: bold; padding-bottom: 10px;}
+
+/* Mobile */
+@media (max-width:900px){ .glass-box-main{padding:4vw 1vw;min-width:unset;max-width:unset;} .karim-sider,.karim-sider-right{padding:10px 5vw;} }
 </style>
 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1,2.3,1])
+# ========== Layout ==========
+col1, col2, col3 = st.columns([1, 2.3, 1])
 
 with col1:
     st.markdown("""
-    <div class="karim-sider">
-        <div class="sider-title">Bulk Tools</div>
-        <div class="sider-section">
-            <span class="sider-label">Download Clean Numbers:</span><br>
+    <div class=\"karim-sider\">
+        <div class=\"sider-title\">Bulk Tools</div>
+        <div class=\"sider-section\">
+            <span class=\"sider-label\">Download Clean Numbers:</span><br>
     """, unsafe_allow_html=True)
+
     st.session_state.setdefault("last_numbers", [])
     if st.session_state.get("last_numbers"):
         st.download_button(
@@ -338,99 +255,82 @@ with col1:
         )
         copy_to_clipboard_code("\n".join(st.session_state["last_numbers"]), "Copy All Numbers")
     else:
-      st.markdown("""
-        <div style="
-            background: rgba(246,250,255,0.82);
-            border-radius: 13px;
-            border: 1.1px solid #b6c7e2;
-            box-shadow: 0 3px 13px #38bdf820;
-            padding: 14px 18px;
-            margin: 13px 0 14px 0;
-            color: #174ca1;
-            font-size: 0.96em;
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            letter-spacing: .02em;
-            text-align: left;
-            ">
+        st.markdown(
+            """
+            <div style=\"background: #0b1220; border-radius: 13px; border: 1.1px solid #1f2b40; box-shadow: inset 0 0 0 1px #1a2436; padding: 14px 18px; margin: 13px 0 14px 0; color: #9cc9ff; font-size: 0.96em;\">
             ℹ️ Clean numbers will appear here after filtering.
-        </div>
-      """, unsafe_allow_html=True)
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     st.markdown("""</div>""", unsafe_allow_html=True)
-    st.markdown("""
-    <div class="sider-section" style="background:rgba(237,246,255,0.45);border-radius:9px;padding:12px 12px 9px 13px;margin-bottom:12px;">
-        <span class="sider-label" style="color:#1366d6;">Import / Export:</span>
-        <ul style='margin:7px 0 0 13px;padding:0;list-style:none;'>
-            <li style="margin-bottom:5px;">
-                <span style="font-size:1.08em;color:#1182c9;">📤</span>
-                <span style="color:#13345d;font-size:0.97em;">Upload <b>CSV</b>, Excel, or paste numbers.</span>
-            </li>
-            <li>
-                <span style="font-size:1.08em;color:#00b378;">📥</span>
-                <span style="color:#13345d;font-size:0.97em;">Export or copy filtered numbers directly.</span>
-            </li>
-        </ul>
-    </div>
-    <div class="sider-section" style="background:rgba(245,255,246,0.50);border-radius:9px;padding:12px 12px 9px 13px;margin-bottom:13px;">
-        <span class="sider-label" style="color:#108556;">New Features:</span>
-        <div style="color:#1976d2;font-weight:700;font-size:0.99em;line-height:1.5;margin-top:4px;">
-            <span style="font-size:1.09em;">✨</span> One-click <span style="color:#10b981;font-weight:800;">copy</span> enabled!<br>
-            <span style="font-size:1.09em;">💡</span> Fully responsive & modern design.
+
+    st.markdown(
+        """
+        <div class=\"sider-section\" style=\"background:#0b1220;border:1px solid #1f2b40;border-radius:10px;padding:12px 12px 9px 13px;margin-bottom:12px;\">
+            <span class=\"sider-label\" style=\"color:#7dd3fc;\">Import / Export:</span>
+            <ul style='margin:7px 0 0 13px;padding:0;list-style:none;color:#dbeafe;'>
+                <li style=\"margin-bottom:5px;\">📤 Upload <b>CSV</b>, Excel, or paste numbers.</li>
+                <li>📥 Export or copy filtered numbers directly.</li>
+            </ul>
         </div>
-    </div>
-    <div class="sider-logo"><span>🛠️</span></div>
-    """, unsafe_allow_html=True)
+        <div class=\"sider-section\" style=\"background:#0b1220;border:1px solid #1f2b40;border-radius:10px;padding:12px 12px 9px 13px;margin-bottom:13px;\">
+            <span class=\"sider-label\" style=\"color:#7dd3fc;\">Latest:</span>
+            <div style=\"color:#9cc9ff;font-weight:700;font-size:0.99em;line-height:1.5;margin-top:4px;\">
+                ✨ One-click copy enabled<br>
+                🚀 Fully responsive & modern design
+            </div>
+        </div>
+        <div class=\"sider-logo\"><span>✨</span></div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown("""
-    <div class="karim-sider karim-sider-right">
-        <div class="sider-title">Quick Links & News</div>
-        <div class="sider-section">
-            <span class="sider-label">Official Catalog:</span>
-            <a href="https://eurosweet.com.tr" target="_blank" style="color:#2563eb;text-decoration:underline;font-weight:600;">Visit Website</a>
+    st.markdown(
+        """
+        <div class=\"karim-sider karim-sider-right\">
+            <div class=\"sider-title\">Quick Links & News</div>
+            <div class=\"sider-section\">
+                <span class=\"sider-label\">Official Catalog:</span>
+                <a href=\"https://eurosweet.com.tr\" target=\"_blank\" style=\"color:#7dd3fc;text-decoration:underline;font-weight:700;\">Visit Website</a>
+            </div>
+            <div class=\"sider-section\">
+                <span class=\"sider-label\">Contact Developer:</span>
+                <a href=\"mailto:karim.amsha@gmail.com\" style=\"color:#9cc9ff;\">karim.amsha@gmail.com</a>
+            </div>
+            <div class=\"sider-section\">
+                <span class=\"sider-label\">Latest Update:</span>
+                <div style=\"color:#22d3ee;font-weight:800;\">🚀 Responsive + One-click Copy!</div>
+            </div>
+            <div class=\"sider-logo\"><span>🛠️</span></div>
         </div>
-        <div class="sider-section">
-            <span class="sider-label">Contact Developer:</span>
-            <a href="mailto:karim.amsha@gmail.com" style="color:#1976d2;">karim.amsha@gmail.com</a>
-        </div>
-        <div class="sider-section">
-            <span class="sider-label">Latest Update:</span>
-            <div style="color:#0ea5e9;font-weight:700;">🚀 Responsive + One-click Copy enabled!</div>
-        </div>
-        <div class="sider-logo"><span>✨</span></div>
-    </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown("""
-      <div class="glass-box-main">
-          <div class="karim-logo">KARIM</div>
-          <div class="subtitle-karim">WhatsApp Broadcast Sender</div>
-      """, unsafe_allow_html=True)
+    st.markdown(
+        """
+          <div class=\"glass-box-main\">
+              <div class=\"karim-logo\">KARIM</div>
+              <div class=\"subtitle-karim\">WhatsApp Broadcast Sender</div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # --- أضف CSS مخصص لعناوين الراديو ---
-    st.markdown("""
-    <style>
-    .form-label-karim {
-        font-weight: 800;
-        color: #1877f2;
-        font-size: 1.14em;
-        letter-spacing: .03em;
-        margin-bottom: 0.2em;
-        display: block;
-    }
-    .stRadio > div[role="radiogroup"] label,
-    .stRadio > div[role="radiogroup"] span,
-    .stRadio > div[role="radiogroup"] div {
-        font-weight: 500 !important;
-        color: #21293a !important;
-        font-size: 1.09em !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        .form-label-karim {font-weight: 900; color: #9cc9ff; font-size: 1.08em; letter-spacing: .03em; margin-bottom: 0.2em; display: block;}
+        .stRadio > div[role=\"radiogroup\"] label, .stRadio > div[role=\"radiogroup\"] span, .stRadio > div[role=\"radiogroup\"] div {font-weight: 600 !important; color: #e5e9f0 !important; font-size: 1.02em !important;}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # --- عناوين الراديو بخط أزرق عريض ---
-    st.markdown('<span class="form-label-karim">Choose mode:</span>', unsafe_allow_html=True)
+    # --- Mode Switch ---
+    st.markdown('<span class=\"form-label-karim\">Choose mode:</span>', unsafe_allow_html=True)
     mode = st.radio(
         "",
         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
@@ -438,8 +338,15 @@ with col2:
         key="mode"
     )
 
+    numbers: list[str] = []
+    names: list[str] = []
+    countries: list[str] = []
+    platform_type = "web"
+    msg_template = templates['en']
+
+    # ---- Simple Mode ----
     if mode == "Simple: Numbers Only":
-        st.markdown('<span class="form-label-karim">Language</span>', unsafe_allow_html=True)
+        st.markdown('<span class=\"form-label-karim\">Language</span>', unsafe_allow_html=True)
         lang = st.radio(
             "",
             ["🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"],
@@ -453,15 +360,16 @@ with col2:
             "🇪🇸 Español": "es"
         }[lang]
 
-        st.markdown('<span class="form-label-karim">Send using</span>', unsafe_allow_html=True)
+        st.markdown('<span class=\"form-label-karim\">Send using</span>', unsafe_allow_html=True)
         platform = st.radio(
             "",
             ["💻 WhatsApp Web", "📱 WhatsApp App"],
             horizontal=True, key="plat_radio"
         )
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
+
         numbers_raw = st.text_area(
-            "Numbers (comma/newline/any format)", 
+            "Numbers (comma/newline/any format)",
             placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)"
         )
         numbers = extract_numbers(numbers_raw)
@@ -475,109 +383,69 @@ with col2:
             st.code('\n'.join(numbers), language="text")
             copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
             st.download_button(
-                "⬇️ Download filtered numbers", 
-                "\n".join(numbers), 
-                file_name="clean_numbers.txt", 
+                "⬇️ Download filtered numbers",
+                "\n".join(numbers),
+                file_name="clean_numbers.txt",
                 key="dl-main"
             )
-
-# with col2:
-#     st.markdown("""
-#       <div class="glass-box-main">
-#           <div class="karim-logo">KARIM</div>
-#           <div class="subtitle-karim">WhatsApp Broadcast Sender</div>
-#           <!-- هنا ضع بقية عناصر الصفحة: الأزرار، الراديو، المدخلات، إلخ -->
-#       </div>
-#       """, unsafe_allow_html=True)
-    
-#     mode = st.radio(
-#         "Choose mode:",
-#         ["Simple: Numbers Only", "Smart: Personalized Name & Country"],
-#         horizontal=True,
-#         key="mode"
-#     )
-    
-#     # ---- Simple Mode ----
-#     if mode == "Simple: Numbers Only":
-#         lang = st.radio("Language", [
-#             "🇬🇧 English", "🇸🇦 العربية", "🇹🇷 Türkçe", "🇫🇷 Français", "🇪🇸 Español"
-#         ], horizontal=True, key="lang_radio")
-#         lang_code = {
-#             "🇬🇧 English": "en",
-#             "🇸🇦 العربية": "ar",
-#             "🇹🇷 Türkçe": "tr",
-#             "🇫🇷 Français": "fr",
-#             "🇪🇸 Español": "es"
-#         }[lang]
-#         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio")
-#         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
-#         numbers_raw = st.text_area("Numbers (comma/newline/any format)", placeholder="Paste numbers, comma, newline, or any format (even tel +254 722 206312)")
-#         numbers = extract_numbers(numbers_raw)
-#         names = [''] * len(numbers)
-#         countries = [''] * len(numbers)
-#         msg_template = templates[lang_code]
-#         st.session_state["last_numbers"] = numbers if numbers else []
-
-#         if numbers_raw and numbers:
-#             st.markdown("#### Filtered Numbers:")
-#             st.code('\n'.join(numbers), language="text")
-#             copy_to_clipboard_code("\n".join(numbers), "Copy Filtered Numbers")
-#             st.download_button("⬇️ Download filtered numbers", "\n".join(numbers), file_name="clean_numbers.txt", key="dl-main")
 
     # ---- Smart Mode ----
     else:
         platform = st.radio("Send using", ["💻 WhatsApp Web", "📱 WhatsApp App"], horizontal=True, key="plat_radio2")
         platform_type = "web" if platform == "💻 WhatsApp Web" else "mobile"
-        st.markdown("""
-          <div class="karim-glass-info">
+
+        st.markdown(
+          """
+          <div class=\"karim-glass-info\" style=\"background:#0b1220;border:1px solid #1f2b40;color:#9cc9ff;\">
               You can upload a CSV file (<b>number,name,country</b>) or enter data manually 👇
           </div>
-          """, unsafe_allow_html=True)
-        # st.info("You can upload a CSV file (number,name,country) or enter data manually 👇")
+          """,
+          unsafe_allow_html=True,
+        )
+
         st.download_button(
             label="⬇️ Download example CSV",
             data="number,name,country\n201111223344,Mohamed,Egypt\n971500000001,Ahmed,UAE\n",
             file_name="example_contacts.csv",
             mime="text/csv",
         )
+
         data_opt = st.radio("Input method:", ["Upload CSV file", "Manual entry"], horizontal=True, key="smart_input")
         df = None
+
         if data_opt == "Upload CSV file":
-          uploaded_file = st.file_uploader("Upload file (CSV or Excel: number,name,country)", type=["csv", "xlsx", "xls"])
-          if uploaded_file is not None:
-              try:
-                  filename = uploaded_file.name
-                  if filename.endswith('.csv'):
-                      df = pd.read_csv(uploaded_file)
-                  elif filename.endswith(('.xlsx', '.xls')):
-                      df = pd.read_excel(uploaded_file)
-                  else:
-                      st.error("Unsupported file format. Please upload CSV or Excel file.")
-                      df = None
+            uploaded_file = st.file_uploader("Upload file (CSV or Excel: number,name,country)", type=["csv", "xlsx", "xls"])
+            if uploaded_file is not None:
+                try:
+                    filename = uploaded_file.name
+                    if filename.endswith('.csv'):
+                        df = pd.read_csv(uploaded_file)
+                    elif filename.endswith(('.xlsx', '.xls')):
+                        df = pd.read_excel(uploaded_file)
+                    else:
+                        st.error("Unsupported file format. Please upload CSV or Excel file.")
+                        df = None
 
-                  if df is not None:
-                      columns = list(df.columns)
-                      # يطلب من المستخدم يختار الأعمدة بنفسه
-                      number_col = st.selectbox("Select the column containing WhatsApp numbers:", columns)
-                      name_col = st.selectbox("Select the name column (optional):", columns, index=1 if len(columns) > 1 else 0)
-                      country_col = st.selectbox("Select the country column (optional):", columns, index=2 if len(columns) > 2 else 0)
+                    if df is not None:
+                        columns = list(df.columns)
+                        number_col = st.selectbox("Select the column containing WhatsApp numbers:", columns)
+                        name_col = st.selectbox("Select the name column (optional):", columns, index=1 if len(columns) > 1 else 0)
+                        country_col = st.selectbox("Select the country column (optional):", columns, index=2 if len(columns) > 2 else 0)
 
-                      # فلترة الداتا فريم حسب العمود المختار
-                      df = df.dropna(subset=[number_col])
-                      df[number_col] = df[number_col].apply(clean_number)
-                      df = df[df[number_col].str.len() >= 8]
-                      df = df.astype(str)
-                      st.success(f"{len(df)} contacts loaded.")
+                        df = df.dropna(subset=[number_col])
+                        df[number_col] = df[number_col].apply(clean_number)
+                        df = df[df[number_col].str.len() >= 8]
+                        df = df.astype(str)
+                        st.success(f"{len(df)} contacts loaded.")
 
-                      # استخراج القيم حسب اختيار المستخدم
-                      numbers = df[number_col].tolist()
-                      names = df[name_col].tolist() if name_col else ['']*len(df)
-                      countries = df[country_col].tolist() if country_col else ['']*len(df)
-                  else:
-                      numbers, names, countries = [], [], []
-              except Exception as e:
-                  st.error(f"Failed to process file: {e}")
-                  numbers, names, countries = [], [], []
+                        numbers = df[number_col].tolist()
+                        names = df[name_col].tolist() if name_col else ['']*len(df)
+                        countries = df[country_col].tolist() if country_col else ['']*len(df)
+                    else:
+                        numbers, names, countries = [], [], []
+                except Exception as e:
+                    st.error(f"Failed to process file: {e}")
+                    numbers, names, countries = [], [], []
         else:
             st.info("Enter data manually (add/remove rows as needed):")
             example_data = pd.DataFrame({
@@ -594,19 +462,17 @@ with col2:
             df["number"] = df["number"].apply(clean_number)
             df = df[df["number"].str.len() >= 8]
             df = df.astype(str)
+
         if df is not None and not df.empty:
-          # إذا كان المستخدم رفع ملف: استخدم الأعمدة المختارة
-          if data_opt == "Upload CSV file" and 'number_col' in locals():
-              numbers = df[number_col].tolist()
-              names = df[name_col].tolist() if name_col else ['']*len(df)
-              countries = df[country_col].tolist() if country_col else ['']*len(df)
-          else:
-              # إذا كان الإدخال يدوي (columns ثابتة: number, name, country)
-              numbers = df['number'].tolist() if 'number' in df.columns else []
-              names = df['name'].tolist() if 'name' in df.columns else ['']*len(df)
-              countries = df['country'].tolist() if 'country' in df.columns else ['']*len(df)
-        else:
-          numbers, names, countries = [], [], []
+            if data_opt == "Upload CSV file" and 'number_col' in locals():
+                numbers = df[number_col].tolist()
+                names = df[name_col].tolist() if name_col else ['']*len(df)
+                countries = df[country_col].tolist() if country_col else ['']*len(df)
+            else:
+                numbers = df['number'].tolist() if 'number' in df.columns else []
+                names = df['name'].tolist() if 'name' in df.columns else ['']*len(df)
+                countries = df['country'].tolist() if 'country' in df.columns else ['']*len(df)
+
         msg_template = st.text_area(
             "Write message template (use {name}, {country}, {number}):",
             value=(
@@ -623,6 +489,7 @@ with col2:
             height=220,
             key="smart_template"
         )
+
         st.session_state["last_numbers"] = numbers if numbers else []
         if df is not None and not df.empty:
             st.markdown("#### Filtered Numbers:")
@@ -640,11 +507,11 @@ with col2:
         percent = int((st.session_state.current+1) / len(numbers) * 100)
         st.markdown(
             f'''
-            <div style="margin-bottom:6px;"><b style="color:#1565c0;font-size:1.09rem">Progress:</b></div>
+            <div style="margin-bottom:6px;"><b style="color:#9cc9ff;font-size:1.02rem">Progress:</b></div>
             <div style="margin-bottom:9px;">
-                <div style="width:62px;height:62px;margin:auto;position:relative;">
-                    <div style="width:62px;height:62px;border-radius:50%;background:conic-gradient(#26c6da {percent}%, #e3f2fd {percent}% 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #1976d225;position:absolute;top:0;left:0;animation:popIn .7s;">
-                        <span style="font-size:1.15rem;color:#1565c0;font-family:'Cairo',sans-serif;font-weight:900;letter-spacing:2px;z-index:1;margin:auto;">{st.session_state.current+1}/{len(numbers)}</span>
+                <div style="width:72px;height:72px;margin:auto;position:relative;">
+                    <div style="width:72px;height:72px;border-radius:50%;background:conic-gradient(#22d3ee {percent}%, #0b1220 {percent}% 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px #22d3ee22;position:absolute;top:0;left:0;">
+                        <span style="font-size:1.05rem;color:#051423;font-family:'Cairo',sans-serif;font-weight:900;letter-spacing:2px;z-index:1;margin:auto;">{st.session_state.current+1}/{len(numbers)}</span>
                     </div>
                 </div>
             </div>
@@ -662,26 +529,29 @@ with col2:
                 country=countries[st.session_state.current] if countries else '',
                 number=numbers[st.session_state.current]
             )
-        except Exception as e:
+        except Exception:
             msg_personal = "⚠️ Please check your template or data"
+
         message = st.text_area(
             "Message",
             value=msg_personal,
             key="msgboxfinal",
             help="Edit before sending if you want",
-            height=120,
+            height=140,
         )
+
         st.write(f"**Contact:** {min(st.session_state.current+1, len(numbers))} / {len(numbers)}")
         info = f'{numbers[st.session_state.current]}'
         if mode == "Smart: Personalized Name & Country" and names and countries:
             info += f" — {names[st.session_state.current]} — {countries[st.session_state.current]}"
         st.write(
-            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#e3f2fd,#b3ecf7);color:#1565c0;'
-            'border-radius:20px;font-family:Roboto,sans-serif;font-size:1.07rem;font-weight:bold;'
-            'box-shadow:0 1px 7px #1976d217;margin-bottom:9px;">'
-            f'{info}</span>',
+            f'<span style="display:inline-block;padding:7px 19px;background:linear-gradient(90deg,#0b1220,#0b1220);color:#9cc9ff;'
+            'border:1px solid #1f2b40;border-radius:20px;font-family:Inter,sans-serif;font-size:1.02rem;font-weight:800;'
+            'box-shadow:inset 0 0 0 1px #1a2436;margin-bottom:9px;">'
+            f"{info}</span>",
             unsafe_allow_html=True
         )
+
         st.markdown(
             '<div class="numbers-list-karim">' +
             "".join([
@@ -714,7 +584,7 @@ with col2:
                 url = f"https://wa.me/{num}?text={msg_encoded}"
             st.markdown(
                 f"<div style='text-align:center; margin-top:6px;'>"
-                f"<a href='{url}' target='_blank' style='font-weight:bold; color:#1976d2; font-size:18px; letter-spacing:.5px;'>"
+                f"<a href='{url}' target='_blank' style='font-weight:900; color:#22d3ee; font-size:18px; letter-spacing:.5px;'>"
                 "🚀 Click here if WhatsApp didn't open automatically</a></div>", unsafe_allow_html=True
             )
             st.components.v1.html(f"""<script>window.open("{url}", "_blank");</script>""")
@@ -725,6 +595,5 @@ with col2:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="footer-karim">✦ Powered by <span style="font-family:Cairo,sans-serif;letter-spacing:2.3px;color:#1976d2;">Karim OTHMAN</span> &copy; 2025</div>', unsafe_allow_html=True)
-
-
+# ========== Footer ==========
+st.markdown('<div class=\"footer-karim\">✦ Powered by <span style=\"letter-spacing:2.3px;color:#22d3ee;\">Karim OTHMAN</span> &copy; 2025</div>', unsafe_allow_html=True)
