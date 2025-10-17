@@ -494,6 +494,9 @@ render_pro_header(
 # ===========================================================
 colL, colC, colR = st.columns([1.05, 2.4, 1.05])
 
+with colR:
+    render_quick_links(QUICK_LINKS_DATA, title="Quick Links")
+
 # -----------------------------------
 # 9.1) Left Column: Tools + Stats
 # -----------------------------------
@@ -713,13 +716,6 @@ QUICK_LINKS_DATA = [
     #   "tint": "green",
     # },
 ]
-
-# ===========================
-# الاستدعاء داخل عمود Quick Links
-# ===========================
-# في مكان colR استبدل البلوك الحالي بهذا:
-# with colR:
-#     render_quick_links(QUICK_LINKS_DATA, title="Quick Links")
 
 # -----------------------------------
 # 9.3) Center Column: Core Workflow
