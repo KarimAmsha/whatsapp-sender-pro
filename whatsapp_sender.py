@@ -48,75 +48,95 @@ VAR_PATTERN = re.compile(r"\{(name|country|number|idx)\}")
 
 # قوالب جاهزة لكل لغة (يمكن التعديل والإضافة)
 LANG_TEMPLATES = {
-    'en': """Hello {name} 👋
+    "en": """Hello {name},
 
-We are the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turkey).
+I’m reaching out from the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul, Türkiye).
 
-We specialize in producing high-quality snacks such as:
-🍪 Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
+We manufacture and export high-quality FMCG snacks under our brands NUKKA & PROSWEET:
+• Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
+• ISO 9001 & ISO 22000 certified production, export-ready specs.
 
-We're always eager to connect with reliable partners and explore new markets together. 🤝
+If distribution in {country} is within your scope, I’d be glad to share:
+• Latest catalogues & technical sheets
+• MOQ and CIF/CFR price offers
+• Lead times, loading plans, and available flavors/pack sizes
+• Private label (OEM) options where applicable
 
-If you are interested, we are happy to share our catalog, price list, and discuss how we can work together.
-
-Looking forward to your reply!
-
+Kindly advise your categories of interest and preferred next step (catalogue only / prices / brief call).
 Best regards,
-Sales Department""",
-    'ar': """مرحبًا {name} 👋
+Sales Department | EUROSWEET GIDA LTD. ŞTİ.""",
 
-نحن قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول - تركيا).
+    "ar": """مرحبًا {name}،
 
-نحن متخصصون في إنتاج سناكات عالية الجودة مثل:
-🍪 الكرواسون، الكيك، البسكويت، الدونات، الجيلي، والويفر.
+نتواصل معكم من قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول – تركيا).
 
-نسعى دائمًا للتواصل مع شركاء موثوقين واستكشاف أسواق جديدة معًا 🤝
+نُنتج ونُصدّر سناكات عالية الجودة تحت علامتينا NUKKA وPROSWEET:
+• كرواسون، كيك، بسكويت، دونات، جيلي، وويفر.
+• تصنيع معتمد وفق ISO 9001 وISO 22000 ومواصفات جاهزة للتصدير.
 
-إذا كنت مهتمًا، يسعدنا أن نرسل لك الكتالوج وقائمة الأسعار ومناقشة فرص التعاون المشترك.
+إذا كان التوزيع في {country} ضمن نطاق عملكم، يسعدنا تزويدكم بـ:
+• أحدث الكتالوجات والبطاقات الفنية
+• عروض أسعار CIF/CFR مع الحد الأدنى للطلب (MOQ)
+• أزمنة التسليم وخطط التحميل والنكهات/الأحجام المتاحة
+• خيارات العلامة الخاصة (OEM) عند الطلب
 
-بانتظار ردكم الكريم!
-
+نرجو تزويدنا بفئات المنتجات التي تهمكم والخطوة التالية المفضلة (كتالوج / أسعار / مكالمة قصيرة).
 تحياتنا،
-قسم المبيعات""",
-    'tr': """Merhaba {name} 👋
+قسم المبيعات | EUROSWEET GIDA LTD. ŞTİ.""",
 
-Biz EUROSWEET GIDA LTD. ŞTİ. (İstanbul – Türkiye) Satış Departmanıyız.
+    "tr": """Merhaba {name},
 
-Aşağıdaki yüksek kaliteli atıştırmalıkları üretiyoruz:
-🍪 Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret.
+EUROSWEET GIDA LTD. ŞTİ. (İstanbul, Türkiye) Satış Departmanı’ndan yazıyorum.
 
-Her zaman güvenilir ortaklarla bağlantı kurmak ve yeni pazarları birlikte keşfetmek isteriz. 🤝
+NUKKA ve PROSWEET markalarıyla yüksek kaliteli atıştırmalıklar üretiyor ve ihraç ediyoruz:
+• Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret
+• ISO 9001 & ISO 22000 sertifikalı üretim, ihracata hazır teknik dokümanlar
 
-İlgileniyorsanız, kataloğumuzu ve fiyat listemizi paylaşabilir, iş birliğini konuşabiliriz.
+{country} pazarında dağıtım yapıyorsanız memnuniyetle paylaşırız:
+• Güncel kataloglar ve teknik föyler
+• MOQ ve CIF/CFR bazlı fiyat teklifleri
+• Terminler, yükleme planları, aroma/gramaj seçenekleri
+• Uygun olan ürünlerde özel marka (OEM)
 
+İlgi duyduğunuz kategorileri ve tercih ettiğiniz sonraki adımı (katalog / fiyat / kısa görüşme) iletir misiniz?
 Saygılarımızla,
-Satış Departmanı""",
-    'fr': """Bonjour {name} 👋
+Satış Departmanı | EUROSWEET GIDA LTD. ŞTİ.""",
 
-Nous sommes le département commercial de EUROSWEET GIDA LTD. ŞTİ. (Istanbul – Turquie).
+    "fr": """Bonjour {name},
 
-Nous produisons des snacks de haute qualité :
-🍪 Croissants, gâteaux, biscuits, donuts, gelées et gaufrettes.
+Je vous contacte du Département Commercial d’EUROSWEET GIDA LTD. ŞTİ. (Istanbul, Türkiye).
 
-Nous serions ravis d'échanger et d'explorer de nouveaux marchés ensemble. 🤝
+Nous produisons et exportons des snacks de qualité sous nos marques NUKKA & PROSWEET :
+• Croissants, gâteaux, biscuits, donuts, jelly et gaufrettes
+• Production certifiée ISO 9001 & ISO 22000, dossiers techniques prêts à l’export
 
-Si intéressé, nous partageons volontiers notre catalogue et nos tarifs.
+Si la distribution en {country} vous intéresse, nous pouvons partager :
+• Catalogues et fiches techniques actualisés
+• Offres de prix CIF/CFR avec MOQ
+• Délais, plans de chargement, arômes/grammages disponibles
+• Possibilités de marque propre (OEM) le cas échéant
 
+Merci de nous indiquer vos catégories d’intérêt et l’étape suivante souhaitée (catalogue / prix / appel bref).
 Cordialement,
-Département des ventes""",
-    'es': """Hola {name} 👋
+Département Commercial | EUROSWEET GIDA LTD. ŞTİ.""",
 
-Somos el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul – Turquía).
+    "es": """Hola {name},
 
-Producimos snacks de alta calidad como:
-🍪 Cruasanes, pasteles, galletas, donas, gelatinas y barquillos.
+Le escribe el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul, Türkiye).
 
-Nos encanta colaborar con socios confiables y abrir nuevos mercados. 🤝
+Fabricamos y exportamos snacks de alta calidad con nuestras marcas NUKKA & PROSWEET:
+• Cruasanes, pasteles, galletas, donuts, jelly y barquillos
+• Producción certificada ISO 9001 e ISO 22000, documentación lista para exportación
 
-Si le interesa, le compartimos el catálogo y la lista de precios.
+Si la distribución en {country} está dentro de su enfoque, podemos enviarle:
+• Catálogos y fichas técnicas actualizados
+• Ofertas de precios CIF/CFR con MOQ
+• Plazos, planes de carga y sabores/tamaños disponibles
+• Opciones de marca privada (OEM) cuando aplique
 
-Saludos,
-Departamento de Ventas""",
+Indíquenos por favor las categorías de interés y el siguiente paso preferido (catálogo / precios / llamada breve).
+Saludos cordiales,
+Departamento de Ventas | EUROSWEET GIDA LTD. ŞTİ."""
 }
 
 # للاختيار من الـ Radio (واجهة المستخدم)
