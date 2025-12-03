@@ -48,95 +48,37 @@ VAR_PATTERN = re.compile(r"\{(name|country|number|idx)\}")
 
 # قوالب جاهزة لكل لغة (يمكن التعديل والإضافة)
 LANG_TEMPLATES = {
+    "tr": """Merhaba {name},
+
+EUROSWEET GIDA LTD. ŞTİ. Satış Departmanından ulaşıyorum. İstanbul’da NUKKA ve PROSWEET markalarımız altında yüksek kaliteli kruvasan, kek, bisküvi, donut, wafer ve jelly üretimi ve ihracatı yapıyoruz.
+
+İlgilendiğiniz ürün kategorilerini belirtirseniz; kataloglarımızı, FOB/CIF fiyat tekliflerini, teslim sürelerini ve MOQ bilgilerini hemen paylaşabilirim. Özel marka (OEM/Private Label) üretim seçenekleri de sunuyoruz.
+
+📞 WhatsApp: +90 552 080 29 16
+📧 Email: karim@kalitecikolata.com.tr
+Satış Departmanı | EUROSWEET GIDA LTD. ŞTİ.""",
+
     "en": """Hello {name},
 
-I’m reaching out from the Sales Department at EUROSWEET GIDA LTD. ŞTİ. (Istanbul, Türkiye).
+I’m reaching out from the Sales Department of EUROSWEET GIDA LTD. ŞTİ. (Istanbul–Türkiye).  
+We manufacture and export high-quality FMCG snacks under our brands **NUKKA & PROSWEET**, including croissants, cakes, biscuits, donuts, wafers, and jellies.
 
-We manufacture and export high-quality FMCG snacks under our brands NUKKA & PROSWEET:
-• Croissants, Cakes, Biscuits, Donuts, Jelly, and Wafers.
-• ISO 9001 & ISO 22000 certified production, export-ready specs.
+Kindly advise which product categories you are interested in, and I will share our catalogues, FOB/CIF pricing, lead times, and MOQ details. Private label (OEM) options are also available.
 
-If distribution in {country} is within your scope, I’d be glad to share:
-• Latest catalogues & technical sheets
-• MOQ and CIF/CFR price offers
-• Lead times, loading plans, and available flavors/pack sizes
-• Private label (OEM) options where applicable
-
-Kindly advise your categories of interest and preferred next step (catalogue only / prices / brief call).
-Best regards,
+📞 WhatsApp: +90 552 080 29 16  
+📧 Email: karim@kalitecikolata.com.tr  
 Sales Department | EUROSWEET GIDA LTD. ŞTİ.""",
 
     "ar": """مرحبًا {name}،
 
-نتواصل معكم من قسم المبيعات في شركة EUROSWEET GIDA LTD. ŞTİ. (إسطنبول – تركيا).
+أتواصل معكم من قسم المبيعات في شركة **EUROSWEET GIDA LTD. ŞTİ.** في إسطنبول.  
+نقوم بتصنيع وتصدير منتجات سناكس عالية الجودة تحت علامتَي **NUKKA & PROSWEET** مثل الكرواسون، الكيك، البسكويت، الدونات، الويفر والجيلي.
 
-نُنتج ونُصدّر سناكات عالية الجودة تحت علامتينا NUKKA وPROSWEET:
-• كرواسون، كيك، بسكويت، دونات، جيلي، وويفر.
-• تصنيع معتمد وفق ISO 9001 وISO 22000 ومواصفات جاهزة للتصدير.
+يرجى تزويدنا بالأصناف التي تهمكم لنرسل لكم الكتالوجات والأسعار (FOB/CIF) ومدة التسليم وكمية الطلب الدنيا. كما نوفر خدمة الإنتاج للعلامات التجارية الخاصة (Private Label).
 
-إذا كان التوزيع في {country} ضمن نطاق عملكم، يسعدنا تزويدكم بـ:
-• أحدث الكتالوجات والبطاقات الفنية
-• عروض أسعار CIF/CFR مع الحد الأدنى للطلب (MOQ)
-• أزمنة التسليم وخطط التحميل والنكهات/الأحجام المتاحة
-• خيارات العلامة الخاصة (OEM) عند الطلب
-
-نرجو تزويدنا بفئات المنتجات التي تهمكم والخطوة التالية المفضلة (كتالوج / أسعار / مكالمة قصيرة).
-تحياتنا،
-قسم المبيعات | EUROSWEET GIDA LTD. ŞTİ.""",
-
-    "tr": """Merhaba {name},
-
-EUROSWEET GIDA LTD. ŞTİ. (İstanbul, Türkiye) Satış Departmanı’ndan yazıyorum.
-
-NUKKA ve PROSWEET markalarıyla yüksek kaliteli atıştırmalıklar üretiyor ve ihraç ediyoruz:
-• Kruvasan, Kek, Bisküvi, Donut, Jöle ve Gofret
-• ISO 9001 & ISO 22000 sertifikalı üretim, ihracata hazır teknik dokümanlar
-
-{country} pazarında dağıtım yapıyorsanız memnuniyetle paylaşırız:
-• Güncel kataloglar ve teknik föyler
-• MOQ ve CIF/CFR bazlı fiyat teklifleri
-• Terminler, yükleme planları, aroma/gramaj seçenekleri
-• Uygun olan ürünlerde özel marka (OEM)
-
-İlgi duyduğunuz kategorileri ve tercih ettiğiniz sonraki adımı (katalog / fiyat / kısa görüşme) iletir misiniz?
-Saygılarımızla,
-Satış Departmanı | EUROSWEET GIDA LTD. ŞTİ.""",
-
-    "fr": """Bonjour {name},
-
-Je vous contacte du Département Commercial d’EUROSWEET GIDA LTD. ŞTİ. (Istanbul, Türkiye).
-
-Nous produisons et exportons des snacks de qualité sous nos marques NUKKA & PROSWEET :
-• Croissants, gâteaux, biscuits, donuts, jelly et gaufrettes
-• Production certifiée ISO 9001 & ISO 22000, dossiers techniques prêts à l’export
-
-Si la distribution en {country} vous intéresse, nous pouvons partager :
-• Catalogues et fiches techniques actualisés
-• Offres de prix CIF/CFR avec MOQ
-• Délais, plans de chargement, arômes/grammages disponibles
-• Possibilités de marque propre (OEM) le cas échéant
-
-Merci de nous indiquer vos catégories d’intérêt et l’étape suivante souhaitée (catalogue / prix / appel bref).
-Cordialement,
-Département Commercial | EUROSWEET GIDA LTD. ŞTİ.""",
-
-    "es": """Hola {name},
-
-Le escribe el Departamento de Ventas de EUROSWEET GIDA LTD. ŞTİ. (Estambul, Türkiye).
-
-Fabricamos y exportamos snacks de alta calidad con nuestras marcas NUKKA & PROSWEET:
-• Cruasanes, pasteles, galletas, donuts, jelly y barquillos
-• Producción certificada ISO 9001 e ISO 22000, documentación lista para exportación
-
-Si la distribución en {country} está dentro de su enfoque, podemos enviarle:
-• Catálogos y fichas técnicas actualizados
-• Ofertas de precios CIF/CFR con MOQ
-• Plazos, planes de carga y sabores/tamaños disponibles
-• Opciones de marca privada (OEM) cuando aplique
-
-Indíquenos por favor las categorías de interés y el siguiente paso preferido (catálogo / precios / llamada breve).
-Saludos cordiales,
-Departamento de Ventas | EUROSWEET GIDA LTD. ŞTİ."""
+📞 واتساب: +90 552 080 29 16  
+📧 البريد: karim@kalitecikolata.com.tr  
+قسم المبيعات | EUROSWEET GIDA LTD. ŞTİ."""
 }
 
 # للاختيار من الـ Radio (واجهة المستخدم)
