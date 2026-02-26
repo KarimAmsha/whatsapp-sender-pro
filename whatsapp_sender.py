@@ -346,7 +346,7 @@ st.markdown(HEADER_CSS, unsafe_allow_html=True)
 
 def render_pro_header(
     title: str = "K A R I M",
-    subtitle: str = "WhatsApp Sender PRO — Revamped \nKALİTE ÇİKOLATA GIDA SAN. TİC. A.Ş.",
+    subtitle: str = "WhatsApp Sender PRO — Revamped | KALİTE ÇİKOLATA GIDA SAN. TİC. A.Ş.",
     chips: list[str] | None = None,
     light: bool | None = None,
 ):
