@@ -486,11 +486,11 @@ QUICK_LINKS_DATA = [
     {
         "title": "WhatsApp Support",
         "sub": "تواصل عبر واتساب لطلبات عاجلة",
-        "href": "https://wa.me/201111223344",
+        "href": "https://wa.me/905382319857",
         "icon": "💬",
         "tint": "amber",
         "badges": ["Fast", "Direct"],
-        "cta": {"label": "Open WhatsApp", "href": "https://wa.me/201111223344"}
+        "cta": {"label": "Open WhatsApp", "href": "https://wa.me/905382319857"}
     },
     {
         "title": "Changelog",
