@@ -579,7 +579,7 @@ with st.sidebar:
 # ===========================================================
 render_pro_header(
     title="K A R I M",
-    subtitle="WhatsApp Sender PRO — Revamped",
+    subtitle="WhatsApp Sender PRO — Revamped | KALİTE ÇİKOLATA GIDA SAN. TİC. A.Ş.",
     chips=["Bulk Sender", "CSV/Excel", "Templates", "Progress Control"]
 )
 
