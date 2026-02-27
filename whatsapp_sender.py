@@ -54,7 +54,7 @@ EUROSWEET GIDA LTD. ŞTİ. Satış Departmanından ulaşıyorum. İstanbul’da 
 
 İlgilendiğiniz ürün kategorilerini belirtirseniz; kataloglarımızı, FOB/CIF fiyat tekliflerini, teslim sürelerini ve MOQ bilgilerini hemen paylaşabilirim. Özel marka (OEM/Private Label) üretim seçenekleri de sunuyoruz.
 
-📞 WhatsApp: +90 552 080 29 16
+📞 WhatsApp: +90 538 231 98 57
 📧 Email: karim@kalitecikolata.com.tr
 Satış Departmanı | EUROSWEET GIDA LTD. ŞTİ.""",
 
@@ -65,7 +65,7 @@ We manufacture and export high-quality FMCG snacks under our brands **NUKKA & PR
 
 Kindly advise which product categories you are interested in, and I will share our catalogues, FOB/CIF pricing, lead times, and MOQ details. Private label (OEM) options are also available.
 
-📞 WhatsApp: +90 552 080 29 16  
+📞 WhatsApp: +90 538 231 98 57  
 📧 Email: karim@kalitecikolata.com.tr  
 Sales Department | EUROSWEET GIDA LTD. ŞTİ.""",
 
@@ -76,7 +76,7 @@ Sales Department | EUROSWEET GIDA LTD. ŞTİ.""",
 
 يرجى تزويدنا بالأصناف التي تهمكم لنرسل لكم الكتالوجات والأسعار (FOB/CIF) ومدة التسليم وكمية الطلب الدنيا. كما نوفر خدمة الإنتاج للعلامات التجارية الخاصة (Private Label).
 
-📞 واتساب: +90 552 080 29 16  
+📞 واتساب: +90 538 231 98 57  
 📧 البريد: karim@kalitecikolata.com.tr  
 قسم المبيعات | EUROSWEET GIDA LTD. ŞTİ."""
 }
